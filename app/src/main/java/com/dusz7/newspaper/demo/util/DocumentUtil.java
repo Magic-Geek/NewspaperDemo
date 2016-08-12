@@ -1,4 +1,4 @@
-package com.samonxu.qrcode.demo.util;
+package com.dusz7.newspaper.demo.util;
 
 import android.content.ContentUris;
 import android.content.Context;

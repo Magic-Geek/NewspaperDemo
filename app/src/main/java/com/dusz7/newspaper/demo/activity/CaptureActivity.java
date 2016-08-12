@@ -1,9 +1,6 @@
-package com.samonxu.qrcode.demo;
+package com.dusz7.newspaper.demo.activity;
 
 import android.app.Activity;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -11,35 +8,31 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.Result;
 import com.google.zxing.ResultPoint;
-import com.samonxu.qrcode.demo.camera.CameraManager;
-import com.samonxu.qrcode.demo.camera.PreviewFrameShotListener;
-import com.samonxu.qrcode.demo.camera.Size;
-import com.samonxu.qrcode.demo.decode.DecodeListener;
-import com.samonxu.qrcode.demo.decode.DecodeThread;
-import com.samonxu.qrcode.demo.decode.LuminanceSource;
-import com.samonxu.qrcode.demo.decode.PlanarYUVLuminanceSource;
-import com.samonxu.qrcode.demo.decode.RGBLuminanceSource;
-import com.samonxu.qrcode.demo.util.DocumentUtil;
-import com.samonxu.qrcode.demo.view.CaptureView;
+import com.dusz7.newspaper.demo.R;
+import com.dusz7.newspaper.demo.camera.CameraManager;
+import com.dusz7.newspaper.demo.camera.PreviewFrameShotListener;
+import com.dusz7.newspaper.demo.camera.Size;
+import com.dusz7.newspaper.demo.decode.DecodeListener;
+import com.dusz7.newspaper.demo.decode.DecodeThread;
+import com.dusz7.newspaper.demo.decode.LuminanceSource;
+import com.dusz7.newspaper.demo.decode.PlanarYUVLuminanceSource;
+import com.dusz7.newspaper.demo.decode.RGBLuminanceSource;
+import com.dusz7.newspaper.demo.util.DocumentUtil;
+import com.dusz7.newspaper.demo.view.CaptureView;
 
 public class CaptureActivity extends Activity implements SurfaceHolder.Callback, PreviewFrameShotListener, DecodeListener,
         OnCheckedChangeListener, OnClickListener {

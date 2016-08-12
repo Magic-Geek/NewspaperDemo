@@ -1,4 +1,4 @@
-package com.samonxu.qrcode.demo.camera;
+package com.dusz7.newspaper.demo.camera;
 
 public class Size {
 	public Size(int w, int h) {

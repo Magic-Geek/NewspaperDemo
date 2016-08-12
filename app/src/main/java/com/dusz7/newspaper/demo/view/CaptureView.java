@@ -1,4 +1,4 @@
-package com.samonxu.qrcode.demo.view;
+package com.dusz7.newspaper.demo.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,8 +10,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.google.zxing.ResultPoint;
-import com.samonxu.qrcode.demo.R;
-
+import com.dusz7.newspaper.demo.R;
 import java.util.LinkedList;
 
 public class CaptureView extends View {

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.samonxu.qrcode.demo.decode;
+package com.dusz7.newspaper.demo.decode;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
-import com.samonxu.qrcode.demo.camera.Size;
+import com.dusz7.newspaper.demo.camera.Size;
 
 /**
  * <p>

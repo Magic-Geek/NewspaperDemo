@@ -1,8 +1,7 @@
-package com.samonxu.qrcode.demo.camera;
+package com.dusz7.newspaper.demo.camera;
 
 import android.content.Context;
 import android.graphics.ImageFormat;
-import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Handler;

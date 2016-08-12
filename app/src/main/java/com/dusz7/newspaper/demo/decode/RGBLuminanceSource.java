@@ -1,8 +1,8 @@
-package com.samonxu.qrcode.demo.decode;
+package com.dusz7.newspaper.demo.decode;
 
 import android.graphics.Bitmap;
 
-import com.samonxu.qrcode.demo.camera.Size;
+import com.dusz7.newspaper.demo.camera.Size;
 
 
 public class RGBLuminanceSource extends LuminanceSource {

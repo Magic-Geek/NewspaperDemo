@@ -1,4 +1,4 @@
-package com.samonxu.qrcode.demo.decode;
+package com.dusz7.newspaper.demo.decode;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
