@@ -25,6 +25,7 @@ public class Newspaper {
 
     public Newspaper(String code){
 
+        //需要修改为从JSON格式中获取信息
         String[] temp = null;
         temp = this.decodeNewspaperInformation(code);
         this.name = temp[0];
@@ -50,6 +51,10 @@ public class Newspaper {
         String decodeResult[];
         decodeResult = code.split(newspaperCode);
         return decodeResult;
+    }
+
+    public void saveNewspaperInformation(){
+
     }
 
     public String getName() {

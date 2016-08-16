@@ -1,55 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF7F7F7"
     android:orientation="vertical"
-    tools:context=".activity.MainActivity">
-
-    <ImageView
-        android:id="@+id/iv_result"
-        android:layout_margin="10dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    >
 
     <Button
 
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:layout_gravity="center_horizontal"
-        android:onClick="scan_onClick"
-        android:text="@string/capture_title"
-        android:textColor="@android:color/black"
-        android:textSize="15sp" />
+        android:onClick="scan_start_onClick"
+        android:text="@string/scan_start_button"
+        android:textSize="17sp"
+        />
 
+    <Button
 
-    <TextView
-        android:id="@+id/tv_result"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="10dp"
-        android:textColor="@android:color/black"
-        android:textSize="15sp" />
+        android:onClick="scan_already_onClick"
+        android:text="@string/scan_already_button"
+        android:textSize="17sp" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="网络测试"
-        android:id="@+id/button_internet"
 
-        android:layout_gravity="center_horizontal" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="测试编码"
-        android:id="@+id/button_encode"
-
-        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>

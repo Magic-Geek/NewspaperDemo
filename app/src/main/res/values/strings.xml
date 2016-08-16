@@ -1,14 +1,17 @@
 <resources>
-    <string name="app_name">QRCodeScannerDemo</string>
-    <string name="capture_camera_failed">Camera disabled</string>
-    <string name="capture_hint">Put the qrcode in frame</string>
+    <string name="app_name">广播电视报管理</string>
+    <string name="capture_camera_failed">相机无法使用，请重启相机</string>
+    <string name="capture_hint">请将报纸二维码置于扫描框内</string>
     <string name="capture_flash">flash</string>
     <string name="capture_back">back</string>
-    <string name="capture_title">扫描二维码</string>
+    <string name="capture_title">扫描报纸二维码</string>
     <string name="capture_album">相册</string>
     <string name="capture_decode_failed">未在图中找到二维码</string>
-    <string name="capture_decode_result_title">Scan Result</string>
+    <string name="capture_decode_result_title">扫描结果</string>
     <string name="capture_decode_result_open">Open</string>
     <string name="capture_decode_result_copy">Copy</string>
     <string name="capture_decode_result_copy_hint">Already copy!</string>
+
+    <string name="scan_start_button">扫描报纸二维码</string>
+    <string name="scan_already_button">使用旧报纸信息</string>
 </resources>
