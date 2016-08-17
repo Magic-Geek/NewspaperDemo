@@ -15,6 +15,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+
+//{"jou_id":"154","sub_jou_id":"124","name":"6039日报","pub_date":"2014-01-01"}
 /**
  * Created by dusz2 on 2016/8/12 0012.
  */

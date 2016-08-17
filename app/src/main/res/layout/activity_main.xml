@@ -8,24 +8,26 @@
 
     <Button
 
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_width="175dp"
+        android:layout_height="75dp"
         android:layout_marginTop="100dp"
         android:layout_gravity="center_horizontal"
         android:onClick="scan_start_onClick"
         android:text="@string/scan_start_button"
         android:textSize="17sp"
+        style="@style/Widget.AppCompat.Button.Colored"
         />
 
     <Button
 
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_width="175dp"
+        android:layout_height="75dp"
         android:layout_marginTop="100dp"
         android:layout_gravity="center_horizontal"
         android:onClick="scan_already_onClick"
         android:text="@string/scan_already_button"
-        android:textSize="17sp" />
+        android:textSize="17sp"
+        style="@style/Widget.AppCompat.Button.Colored"/>
 
 
 

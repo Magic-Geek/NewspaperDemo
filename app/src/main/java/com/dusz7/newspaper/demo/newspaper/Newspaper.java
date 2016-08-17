@@ -1,5 +1,8 @@
 package com.dusz7.newspaper.demo.newspaper;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by dusz2 on 2016/8/12 0012.
  */
@@ -10,7 +13,7 @@ public class Newspaper {
     private String issue;
     private String totalIssue;
 
-    private final String newspaperCode = "-\\*-";
+//    private final String newspaperCode = "-\\*-";
 
     public Newspaper(){
 
@@ -23,15 +26,21 @@ public class Newspaper {
         this.totalIssue = totalIssue;
     }
 
-    public Newspaper(String code){
+    public Newspaper(String jsonCode){
 
-        //需要修改为从JSON格式中获取信息
-        String[] temp = null;
-        temp = this.decodeNewspaperInformation(code);
-        this.name = temp[0];
-        this.date = temp[1];
-        this.issue = temp[2];
-        this.totalIssue = temp[3];
+        //已修改为从JSON格式中获取信息
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonCode);
+            this.name = jsonObject.get("name").toString();
+            this.date = jsonObject.get("pub_date").toString();
+            this.issue = jsonObject.get("jou_id").toString();
+            this.totalIssue = jsonObject.get("sub_jou_id").toString();
+
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -39,19 +48,22 @@ public class Newspaper {
 
         String encodeResult = "";
 
-        encodeResult = this.name + newspaperCode
-                + this.date + newspaperCode
-                + this.issue + newspaperCode
-                + this.totalIssue;
+        encodeResult = "{" +
+                "\"jou_id\":\""+this.issue+"\"," +
+                "\"sub_jou_id\":\""+this.totalIssue+"\"," +
+                "\"name\":\"\"+this.name+\"\"," +
+                "\"pub_date\":\"\"+this.date+\"\"" +
+                "}";
 
         return encodeResult;
     }
 
-    public String[] decodeNewspaperInformation(String code){
-        String decodeResult[];
-        decodeResult = code.split(newspaperCode);
-        return decodeResult;
-    }
+//    public String[] decodeNewspaperInformation(String code){
+//        String decodeResult[];
+//        decodeResult = code.split(newspaperCode);
+//
+//        return decodeResult;
+//    }
 
     public void saveNewspaperInformation(){
 

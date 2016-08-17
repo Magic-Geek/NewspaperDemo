@@ -7,6 +7,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.dusz7.newspaper.demo.R;
+import com.dusz7.newspaper.demo.infoSaved.MyInternalStorage;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,13 +26,27 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(new Intent(MainActivity.this, CaptureActivity.class), 0);
     }
 
+    public void scan_already_onClick(View v){
+        startActivity(new Intent(MainActivity.this,NewspaperInfoActivity.class));
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0 && resultCode == RESULT_OK) {
 
+            MyInternalStorage myInternalStorage = new MyInternalStorage(MainActivity.this);
+            String filename = "myNewspaper";
+            String content = data.getStringExtra(CaptureActivity.EXTRA_RESULT);
+            try{
+                myInternalStorage.save(filename,content);
+//                Toast.makeText(MainActivity.this,"saved sucessfully",Toast.LENGTH_SHORT).show();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+
             Intent intent = new Intent(MainActivity.this,NewspaperInfoActivity.class);
-            intent.putExtra("decodeResult",data.getStringExtra(CaptureActivity.EXTRA_RESULT));
+            //intent.putExtra("decodeResult",data.getStringExtra(CaptureActivity.EXTRA_RESULT));
             startActivity(intent);
 
             //测试部分

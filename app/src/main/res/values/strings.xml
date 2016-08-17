@@ -13,5 +13,5 @@
     <string name="capture_decode_result_copy_hint">Already copy!</string>
 
     <string name="scan_start_button">扫描报纸二维码</string>
-    <string name="scan_already_button">使用旧报纸信息</string>
+    <string name="scan_already_button">使用上次扫描信息</string>
 </resources>

@@ -4,20 +4,54 @@
     android:layout_height="match_parent">
 
 
+    <TextView
+        android:textSize="23sp"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="请输入手机号进行验证："
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:layout_marginTop="50dp"
+        />
+
+
+    <TextView
+        android:layout_gravity="center_horizontal"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:text="请保持在当前页面，并等待来电:"
+        android:layout_marginTop="30dp"/>
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="50dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
+            android:textSize="20sp"
             android:text="手机号：" />
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="170dp"
             android:layout_height="wrap_content"
-            android:id="@+id/phone_text" />
+            android:id="@+id/phone_edit_text"
+            android:textSize="20sp"/>
 
     </LinearLayout>
+
+    <Button
+        android:layout_width="120dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center_horizontal"
+        android:text="登录"
+        android:textSize="19sp"
+        android:id="@+id/verification_getting_button"
+        android:onClick="verification_getting_onClick"
+        android:layout_marginTop="80dp"
+        style="@style/Widget.AppCompat.Button.Colored"/>
 </LinearLayout>

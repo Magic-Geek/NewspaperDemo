@@ -10,13 +10,13 @@
 
 
     <TextView
-        android:textSize="22sp"
+        android:textSize="23sp"
         android:gravity="center_horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="报纸信息如下："
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
 
         />
 
@@ -30,7 +30,6 @@
 
         <TextView
             android:layout_width="85dp"
-
             android:layout_height="wrap_content"
             android:text="报纸名称："
             android:textSize="16sp"/>
@@ -116,13 +115,14 @@
 
 
     <Button
-        android:layout_width="110dp"
-        android:layout_height="wrap_content"
+        android:layout_width="180dp"
+        android:layout_height="70dp"
         android:layout_gravity="center_horizontal"
-        android:text="确认领取"
-        android:textSize="18sp"
+        android:text="领取当期报纸"
+        android:textSize="19sp"
         android:id="@+id/confirm_getting_button"
         android:onClick="confirm_getting_onClick"
-        android:layout_marginTop="50dp"/>
+        android:layout_marginTop="50dp"
+        style="@style/Widget.AppCompat.Button.Colored"/>
 
 </LinearLayout>

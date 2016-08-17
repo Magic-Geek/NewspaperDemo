@@ -7,7 +7,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.dusz7.newspaper.demo.R;
+import com.dusz7.newspaper.demo.infoSaved.MyInternalStorage;
 import com.dusz7.newspaper.demo.newspaper.Newspaper;
+
+import java.io.IOException;
 
 /**
  * Created by dusz2 on 2016/7/20 0020.
@@ -34,8 +37,17 @@ public class NewspaperInfoActivity extends AppCompatActivity {
         totalIssueText = (TextView)findViewById(R.id.totalIssue_text);
 
 
-        Intent intent = this.getIntent();
-        decodeResult = intent.getStringExtra("decodeResult");
+        MyInternalStorage myInternalStorage = new MyInternalStorage(NewspaperInfoActivity.this);
+        String filename = "myNewspaper";
+        try{
+            decodeResult = myInternalStorage.get(filename);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+
+        //Intent intent = this.getIntent();
+        //decodeResult = intent.getStringExtra("decodeResult");
 
         myNewspaper = new Newspaper(decodeResult);
 
@@ -50,6 +62,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
 
         myNewspaper.saveNewspaperInformation();
         Intent intent = new Intent(NewspaperInfoActivity.this,GetNewspaperActivity.class);
+        intent.putExtra("newspaper",this.decodeResult);
         startActivity(intent);
     }
 }
