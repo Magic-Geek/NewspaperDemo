@@ -51,11 +51,17 @@ public class Newspaper {
         encodeResult = "{" +
                 "\"jou_id\":\""+this.issue+"\"," +
                 "\"sub_jou_id\":\""+this.totalIssue+"\"," +
-                "\"name\":\"\"+this.name+\"\"," +
-                "\"pub_date\":\"\"+this.date+\"\"" +
+                "\"name\":\""+this.name+"\"," +
+                "\"pub_date\":\""+this.date+"\"" +
                 "}";
 
         return encodeResult;
+    }
+
+    @Override
+    public String toString(){
+        String result = encodeNewspaperInformation();
+        return result;
     }
 
 //    public String[] decodeNewspaperInformation(String code){

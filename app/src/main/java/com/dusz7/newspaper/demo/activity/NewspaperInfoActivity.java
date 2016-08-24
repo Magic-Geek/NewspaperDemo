@@ -1,11 +1,16 @@
 package com.dusz7.newspaper.demo.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,9 +19,12 @@ import android.widget.Toast;
 
 import com.dusz7.newspaper.demo.R;
 import com.dusz7.newspaper.demo.infoSaved.MyInternalStorage;
+import com.dusz7.newspaper.demo.newspaper.GettingNewspaper;
 import com.dusz7.newspaper.demo.newspaper.Newspaper;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by dusz2 on 2016/7/20 0020.
@@ -32,15 +40,29 @@ public class NewspaperInfoActivity extends AppCompatActivity {
     private TextView totalIssueText;
 
     protected LocationManager locationManager;
-    protected LocationListener locationListener;
-    protected Context context;
+
+    private String myLatitude;
+    private String myAltitude;
+    private String myLocation;
+
+    SimpleDateFormat formatter;
+    private String myTime;
 
     private boolean isLogin = false;
 
     private String myPhone;
 
+    private boolean isGet = true;
+
+    private String gettingResut;
+
     final int REQUEST_CODE = 1;
     final int RESULT_CODE = 11;
+
+    final int REQUEST_PERMISSION_FINE_LOCATION_CODE = 20;
+
+    private int gettingHistory;
+    private GettingNewspaper lastGetting;
 
 
     @Override
@@ -69,6 +91,52 @@ public class NewspaperInfoActivity extends AppCompatActivity {
         issueText.setText(myNewspaper.getIssue());
         totalIssueText.setText(myNewspaper.getTotalIssue());
 
+        formatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if(!isGpsAble(locationManager)){
+            Toast.makeText(NewspaperInfoActivity.this, "定位服务未打开", Toast.LENGTH_SHORT).show();
+            openGPS2();
+        }
+
+        if (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(NewspaperInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            //has permission, do operation directly
+
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            updateLocation(location);
+            //设置间隔两秒获得一次GPS定位信息
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 8, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    // 当GPS定位信息发生改变时，更新定位
+                    updateLocation(location);
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                    // 当GPS LocationProvider可用时，更新定位
+                    if (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(NewspaperInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                        updateLocation(locationManager.getLastKnownLocation(provider));
+                    }
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                    updateLocation(null);
+                }
+            });
+
+        } else {
+            ActivityCompat.requestPermissions(NewspaperInfoActivity.this, new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_FINE_LOCATION_CODE);
+        }
+
     }
 
     public void confirm_getting_onClick(View v){
@@ -78,18 +146,42 @@ public class NewspaperInfoActivity extends AppCompatActivity {
             Thread gettingThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                    
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+
                     //线程执行内容
                     //发送手机号、报纸内容、地理位置
                     //得到返回值：是否已领取，领取历史记录
+
+                    Date curDate =  new Date(System.currentTimeMillis());
+                    myTime = formatter.format(curDate);
+
+                    GettingNewspaper gettingNewspaper = new GettingNewspaper(myNewspaper,myPhone,myLocation,myTime);
+                    Log.i("领取情况",gettingNewspaper.toString());
+
+                    isGet = false;
                 }
             });
             //开启线程
             gettingThread.start();
 
             Intent intent = new Intent(NewspaperInfoActivity.this,GettingResultActivity.class);
+            gettingHistory = 15;//test
+            if(!isGet){
+                gettingResut = "领取成功";
+                intent.putExtra("gettingResult",gettingResut);
+                intent.putExtra("gettingHistory",gettingHistory);
+            }else {
+                gettingResut = "该用户已领取";
+                intent.putExtra("gettingResult",gettingResut);
+                intent.putExtra("gettingHistory",gettingHistory);
+                Date curDate =  new Date(System.currentTimeMillis());
+                myTime = formatter.format(curDate);
+                lastGetting = new GettingNewspaper(myNewspaper,myPhone,myLocation,myTime);//test
+                intent.putExtra("gettingInformation",lastGetting.toString());
+
+            }
+
+            intent.putExtra("isGet",isGet);
+
             startActivity(intent);
         }
         else{
@@ -99,6 +191,43 @@ public class NewspaperInfoActivity extends AppCompatActivity {
             startActivityForResult(intent,REQUEST_CODE);
         }
 
+    }
+
+    private boolean isGpsAble(LocationManager lm){
+        return lm.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)?true:false;
+    }
+
+    private void openGPS2(){
+        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivityForResult(intent,0);
+    }
+
+    private void updateLocation(Location location) {
+        if (location != null) {
+//            StringBuilder sb = new StringBuilder();
+//            sb.append("当前的位置信息：\n");
+//            sb.append("精度：" + location.getLongitude() + "\n");
+//            sb.append("纬度：" + location.getLatitude() + "\n");
+//            sb.append("高度：" + location.getAltitude() + "\n");
+//            sb.append("速度：" + location.getSpeed() + "\n");
+//            sb.append("方向：" + location.getBearing() + "\n");
+//            sb.append("定位精度：" + location.getAccuracy() + "\n");
+
+            myLatitude = String.valueOf(location.getLatitude());
+            myAltitude = String.valueOf(location.getAltitude());
+            myLocation = myLatitude+","+myAltitude;
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSION_FINE_LOCATION_CODE) {
+            int grantResult = grantResults[0];
+            boolean granted = grantResult == PackageManager.PERMISSION_GRANTED;
+//            Log.i(DEBUG_TAG, "onRequestPermissionsResult granted=" + granted);
+        }
     }
 
     @Override

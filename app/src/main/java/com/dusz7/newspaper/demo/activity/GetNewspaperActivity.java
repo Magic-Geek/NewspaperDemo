@@ -125,6 +125,13 @@ public class GetNewspaperActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     //线程执行内容
+                                    //为手机用户注册
+                                    try{
+                                        JSONObject jsonObject = new JSONObject();
+                                        jsonObject.put("phone",myPhone);
+                                    }catch (JSONException e){
+                                        e.printStackTrace();
+                                    }
                                 }
                             });
                             //开启线程
