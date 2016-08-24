@@ -18,6 +18,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        MyInternalStorage myInternalStorage = new MyInternalStorage(MainActivity.this);
+        String filename = "myNewspaper";
+        String content = "";
+        try{
+            myInternalStorage.save(filename,content);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -27,7 +36,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void scan_already_onClick(View v){
-        startActivity(new Intent(MainActivity.this,NewspaperInfoActivity.class));
+        MyInternalStorage myInternalStorage = new MyInternalStorage(MainActivity.this);
+        String filename = "myNewspaper";
+        String result = "";
+        try{
+            result = myInternalStorage.get(filename);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        if(!result.equals("")){
+            startActivity(new Intent(MainActivity.this,NewspaperInfoActivity.class));
+        }else {
+            Toast.makeText(MainActivity.this,"之前未扫描过任何二维码！",Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override

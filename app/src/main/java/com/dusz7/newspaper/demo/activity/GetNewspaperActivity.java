@@ -10,9 +10,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.util.Log;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.dusz7.newspaper.demo.R;
 import com.dusz7.newspaper.demo.internet.InternetUtil;
@@ -30,7 +32,6 @@ public class GetNewspaperActivity extends AppCompatActivity {
     private String myPhone;
 
     final int RESULT_CODE = 11;
-//    private String newspaperInformation;
 
     private boolean isRegister = false;
 
@@ -41,54 +42,54 @@ public class GetNewspaperActivity extends AppCompatActivity {
         setContentView(R.layout.activity_get_newspaper);
 
         phoneEditText = (EditText)findViewById(R.id.phone_edit_text);
-
+        phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
 
         MyPhoneStateListener phoneListener = new MyPhoneStateListener(); //我们派生的类
         TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         telephonyManager.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
 
-//        Intent intent = this.getIntent();
-//        this.newspaperInformation = intent.getStringExtra("newspaper");
     }
 
     public void verification_getting_onClick(View v){
         myPhone = phoneEditText.getText().toString();
+        if(isMobile(myPhone)){
+//            Toast.makeText(GetNewspaperActivity.this,"")
+            Thread verificationThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    //线程执行内容
 
+                    //判断是否注册
 
-        Thread verificationThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //线程执行内容
+                    String url = "";
+                    InternetUtil internetUtil = new InternetUtil(url);
+                    try{
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("phone",myPhone);
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                    }
+                    //internetUtil.putMethod(jsonObject);
 
-                //判断是否注册
+                    //涉及返回结果
+                    Message msg = new Message();
+                    if(isRegister){
+                        msg.what = 0;
+                    }else {
+                        msg.what = 1;
+                    }
 
-                String url = "";
-                InternetUtil internetUtil = new InternetUtil(url);
-                try{
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("phone",myPhone);
-                }catch (JSONException e){
-                    e.printStackTrace();
+                    handler.sendMessage(msg);
+
                 }
-                //internetUtil.putMethod(jsonObject);
+            });
+            //开启线程
+            verificationThread.start();
+        }else{
+            Toast.makeText(GetNewspaperActivity.this,"非法手机号！",Toast.LENGTH_SHORT).show();
+        }
 
-
-                //涉及返回结果
-                Message msg = new Message();
-                if(isRegister){
-                    msg.what = 0;
-                }else {
-                    msg.what = 1;
-                }
-
-                handler.sendMessage(msg);
-
-            }
-        });
-        //开启线程
-        verificationThread.start();
     }
-
 
 
     Handler handler = new Handler(){
@@ -157,14 +158,32 @@ public class GetNewspaperActivity extends AppCompatActivity {
     };
 
 
-
+    /**
+     * 验证手机格式
+     */
+    public static boolean isMobile(String number) {
+    /*
+    移动：134、135、136、137、138、139、150、151、157(TD)、158、159、187、188
+    联通：130、131、132、152、155、156、185、186
+    电信：133、153、180、189、（1349卫通）
+    总结起来就是第一位必定为1，第二位必定为3或5或8，其他位置的可以为0-9
+    */
+        //第二位可以为7
+        String num = "[1]\\d{10}";//"[1]"代表第1位为数字1，"[358]"代表第二位可以为3、5、8中的一个，"\\d{9}"代表后面是可以是0～9的数字，有9位。
+        if (TextUtils.isEmpty(number)) {
+            return false;
+        } else {
+            //matches():字符串是否在给定的正则表达式匹配
+            return number.matches(num);
+        }
+    }
 
     //派生的phoneStateListener类
     class MyPhoneStateListener extends PhoneStateListener {
 
         @Override
         public void onCallStateChanged(int state,String incomingNumber){
-            Log.e("PhoneCallState", "Incoming number "+incomingNumber); //incomingNumber就是来电号码
+//            Log.e("PhoneCallState", "Incoming number "+incomingNumber); //incomingNumber就是来电号码
 
 //            myPhone = incomingNumber;
             phoneEditText.setText(incomingNumber);
