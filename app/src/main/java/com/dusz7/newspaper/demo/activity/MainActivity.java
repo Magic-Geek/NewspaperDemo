@@ -18,14 +18,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MyInternalStorage myInternalStorage = new MyInternalStorage(MainActivity.this);
-        String filename = "myNewspaper";
-        String content = "";
-        try{
-            myInternalStorage.save(filename,content);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+
+        //应该设置成只在第一次程序运行时执行
+//        MyInternalStorage myInternalStorage = new MyInternalStorage(MainActivity.this);
+//        String filename = "myNewspaper";
+//        String content = "";
+//        try{
+//            myInternalStorage.save(filename,content);
+//        }catch (IOException e){
+//            e.printStackTrace();
+//        }
 
     }
 
