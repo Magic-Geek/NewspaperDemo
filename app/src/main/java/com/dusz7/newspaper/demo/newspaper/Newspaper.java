@@ -34,8 +34,8 @@ public class Newspaper {
             JSONObject jsonObject = new JSONObject(jsonCode);
             this.name = jsonObject.get("name").toString();
             this.date = jsonObject.get("pub_date").toString();
-            this.issue = jsonObject.get("jou_id").toString();
-            this.totalIssue = jsonObject.get("sub_jou_id").toString();
+            this.totalIssue = jsonObject.get("jou_id").toString();
+            this.issue = jsonObject.get("sub_jou_id").toString();
 
         }catch (JSONException e){
             e.printStackTrace();
@@ -49,8 +49,8 @@ public class Newspaper {
         String encodeResult = "";
 
         encodeResult = "{" +
-                "\"jou_id\":\""+this.issue+"\"," +
-                "\"sub_jou_id\":\""+this.totalIssue+"\"," +
+                "\"jou_id\":\""+this.totalIssue+"\"," +
+                "\"sub_jou_id\":\""+this.issue+"\"," +
                 "\"name\":\""+this.name+"\"," +
                 "\"pub_date\":\""+this.date+"\"" +
                 "}";

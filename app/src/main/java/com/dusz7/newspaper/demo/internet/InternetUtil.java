@@ -35,20 +35,13 @@ public class InternetUtil {
         this.urlDate = urlDate;
     }
 
-    public String putMethod(){
+    public String putUserMethod(String user){
 
         String state = "";
 
         try {
             try {
-                String jsonstr = "{" +
-                        "\"jou_id\":\"154\"," +
-                        "\"sub_jou_id\":\"124\"," +
-                        "\"name\":\"人民日报\"," +
-                        "\"pub_date\":\"2014-01-01\"" +
-                        "}";
-                JSONObject jsonTest = new JSONObject(jsonstr);
-
+                JSONObject jsonTest = new JSONObject(user);
 
                 //封装访问服务器的地址
                 url=new URL(urlDate);
@@ -59,34 +52,95 @@ public class InternetUtil {
                     conn.setConnectTimeout(3000);           //设置连接超时时间
                     conn.setDoInput(true);                  //打开输入流，以便从服务器获取数据
                     conn.setDoOutput(true);                 //打开输出流，以便向服务器提交数据
-                    conn.setRequestMethod("PUT");          //设置以Post方式提交数据
-                    conn.setUseCaches(false);               //使用Post方式不能使用缓存
-
-
-                    byte[] data = jsonTest.toString().getBytes();
-
-                    //设置请求体的类型是文本类型
-                    conn.setRequestProperty("Content-Type", "application/json");
-                    conn.setRequestProperty("Accept", "application/json");
-                    conn.setRequestProperty("Charset", "UTF-8");
-                    //设置请求体的长度
-                    conn.setRequestProperty("Content-Length", String.valueOf(data.length));
-                    //获得输出流，向服务器写入数据
-                    OutputStream outputStream = conn.getOutputStream();
-
-                    DataOutputStream dos = new DataOutputStream(outputStream);
-                    dos.write(data);
-
-                    dos.flush();
-                    dos.close();
-
+                    conn.setRequestMethod("PUT");
+                    conn.setUseCaches(false);
 
                     int response = conn.getResponseCode();            //获得服务器的响应码
 
                     if(response == HttpURLConnection.HTTP_OK) {
 
-                        Log.i("response","sbs"+response);//处理服务器的响应结果
+                        Log.i("response","adduser"+response);//处理服务器的响应结果
                         state = "OK";
+
+                        byte[] data = jsonTest.toString().getBytes();
+
+                        //设置请求体的类型是文本类型
+                        conn.setRequestProperty("Content-Type", "application/json");
+                        conn.setRequestProperty("Accept", "application/json");
+                        conn.setRequestProperty("Charset", "UTF-8");
+                        //设置请求体的长度
+                        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+                        //获得输出流，向服务器写入数据
+                        OutputStream outputStream = conn.getOutputStream();
+
+                        DataOutputStream dos = new DataOutputStream(outputStream);
+                        dos.write(data);
+
+                        dos.flush();
+                        dos.close();
+                    }
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return state;
+    }
+
+    public String putRecordMethod(String record){
+
+        String state = "";
+
+        try {
+            try {
+                JSONObject jsonTest = new JSONObject(record);
+
+                //封装访问服务器的地址
+                url=new URL(urlDate);
+                try {
+                    //打开对服务器的连接
+                    conn=(HttpURLConnection) url.openConnection();
+
+                    conn.setConnectTimeout(3000);           //设置连接超时时间
+                    conn.setDoInput(true);                  //打开输入流，以便从服务器获取数据
+                    conn.setDoOutput(true);                 //打开输出流，以便向服务器提交数据
+                    conn.setRequestMethod("PUT");
+                    conn.setUseCaches(false);
+
+                    int response = conn.getResponseCode();            //获得服务器的响应码
+
+                    if(response == HttpURLConnection.HTTP_OK) {
+
+                        Log.i("response","addrecord"+response);//处理服务器的响应结果
+                        state = "OK";
+
+                        byte[] data = jsonTest.toString().getBytes();
+
+                        //设置请求体的类型是文本类型
+                        conn.setRequestProperty("Content-Type", "application/json");
+                        conn.setRequestProperty("Accept", "application/json");
+                        conn.setRequestProperty("Charset", "UTF-8");
+                        //设置请求体的长度
+                        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+                        //获得输出流，向服务器写入数据
+                        OutputStream outputStream = conn.getOutputStream();
+
+                        DataOutputStream dos = new DataOutputStream(outputStream);
+                        dos.write(data);
+
+                        dos.flush();
+                        dos.close();
+
                     }
 
                 } catch (IOException e) {
@@ -105,7 +159,7 @@ public class InternetUtil {
         return state;
     }
 
-    public String getMethod(){
+    public String getUserMethod(){
         String state = "";
         try {
 
@@ -115,29 +169,91 @@ public class InternetUtil {
                     //打开对服务器的连接
                     conn=(HttpURLConnection) url.openConnection();
 
-                    conn.setConnectTimeout(3000);           //设置连接超时时间
+                    conn.setConnectTimeout(5000);           //设置连接超时时间
                     conn.setDoInput(true);                  //打开输入流，以便从服务器获取数据
-                    conn.setDoOutput(true);                 //打开输出流，以便向服务器提交数据
-                    conn.setRequestMethod("GET");          //设置以Post方式提交数据
-                    conn.setUseCaches(false);               //使用Post方式不能使用缓存
+                    conn.setRequestMethod("GET");
+                    try {
+
+                        int response = conn.getResponseCode();            //获得服务器的响应码
+
+                        if(response == HttpURLConnection.HTTP_OK) {
+
+                            Log.i("response","getuser"+response);//处理服务器的响应结果
+
+                            /**读入服务器数据的过程**/
+                            //得到输入流
+                            InputStream is=conn.getInputStream();
+                            //创建包装流
+                            BufferedReader br=new BufferedReader(new InputStreamReader(is));
+                            //定义String类型用于储存单行数据
+                            String line=null;
+                            //创建StringBuffer对象用于存储所有数据
+                            StringBuffer sb=new StringBuffer();
+                            while((line=br.readLine())!=null){
+                                sb.append(line);
+                            }
+
+                            Log.i("get_responsed:",sb.toString());
+
+                            state = sb.toString();
+                        }
 
 
-                    /**读入服务器数据的过程**/
-                    //得到输入流
-                    InputStream is=conn.getInputStream();
-                    //创建包装流
-                    BufferedReader br=new BufferedReader(new InputStreamReader(is));
-                    //定义String类型用于储存单行数据
-                    String line=null;
-                    //创建StringBuffer对象用于存储所有数据
-                    StringBuffer sb=new StringBuffer();
-                    while((line=br.readLine())!=null){
-                        sb.append(line);
+                    }finally {
+                        conn.disconnect();
                     }
 
-                    //用TextView显示接收的服务器数据
-                    //resultTv.setText(sb.toString());
-                    Log.i("get_responsed:",sb.toString());
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return state;
+    }
+
+    public String getRecordMethod(){
+        String state = "";
+        try {
+
+                //封装访问服务器的地址
+                url=new URL(urlDate);
+                try {
+
+                    //打开对服务器的连接
+                    conn=(HttpURLConnection) url.openConnection();
+
+                    conn.setConnectTimeout(3000);           //设置连接超时时间
+                    conn.setDoInput(true);                  //打开输入流，以便从服务器获取数据
+                    conn.setRequestMethod("GET");
+
+                    int response = conn.getResponseCode();            //获得服务器的响应码
+                    Log.i("response","getrecord"+response);          //处理服务器的响应结果
+
+                    if(response == HttpURLConnection.HTTP_OK) {
+
+                        /**读入服务器数据的过程**/
+                        //得到输入流
+                        InputStream is=conn.getInputStream();
+                        //创建包装流
+                        BufferedReader br=new BufferedReader(new InputStreamReader(is));
+                        //定义String类型用于储存单行数据
+                        String line=null;
+                        //创建StringBuffer对象用于存储所有数据
+                        StringBuffer sb=new StringBuffer();
+                        while((line=br.readLine())!=null){
+                            sb.append(line);
+                        }
+
+                        Log.i("get_responsed:",sb.toString());
+
+                        state = sb.toString();
+
+                    }
+
 
                     } catch (IOException e) {
                         e.printStackTrace();

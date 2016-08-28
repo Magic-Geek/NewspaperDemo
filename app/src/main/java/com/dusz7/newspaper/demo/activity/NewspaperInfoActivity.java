@@ -19,8 +19,12 @@ import android.widget.Toast;
 
 import com.dusz7.newspaper.demo.R;
 import com.dusz7.newspaper.demo.infoSaved.MyInternalStorage;
+import com.dusz7.newspaper.demo.internet.InternetUtil;
 import com.dusz7.newspaper.demo.newspaper.GettingNewspaper;
 import com.dusz7.newspaper.demo.newspaper.Newspaper;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -62,7 +66,9 @@ public class NewspaperInfoActivity extends AppCompatActivity {
     final int REQUEST_PERMISSION_FINE_LOCATION_CODE = 20;
 
     private int gettingHistory;
-    private GettingNewspaper lastGetting;
+
+    private GettingNewspaper gettingNewspaper;
+    private GettingNewspaper lastGetting = new GettingNewspaper();
 
 
     @Override
@@ -154,28 +160,56 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                     Date curDate =  new Date(System.currentTimeMillis());
                     myTime = formatter.format(curDate);
 
-                    GettingNewspaper gettingNewspaper = new GettingNewspaper(myNewspaper,myPhone,myLocation,myTime);
+                    gettingNewspaper = new GettingNewspaper(myNewspaper,myPhone,myLocation,myTime);
+
                     Log.i("领取情况",gettingNewspaper.toString());
 
-                    isGet = false;
+                    String url = getResources().getString(R.string.network_url) + "record/"+myPhone+"/?name="+myNewspaper.getName()+"&jou_id="+myNewspaper.getTotalIssue();
+
+                    InternetUtil internetUtil = new InternetUtil(url);
+                    String getResult = internetUtil.getRecordMethod();
+                    try {
+                        JSONObject jsonObject = new JSONObject(getResult);
+                        gettingHistory = jsonObject.getInt("news_num");
+                        isGet = jsonObject.getBoolean("receive_state");
+
+                        if(isGet){
+                            lastGetting = new GettingNewspaper(myNewspaper,myPhone,jsonObject.getString("station"),jsonObject.getString("time"));
+                        }
+
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
                 }
             });
             //开启线程
             gettingThread.start();
 
             Intent intent = new Intent(NewspaperInfoActivity.this,GettingResultActivity.class);
-            gettingHistory = 15;//test
+
             if(!isGet){
                 gettingResut = "领取成功";
-                intent.putExtra("gettingResult",gettingResut);
-                intent.putExtra("gettingHistory",gettingHistory);
+
+                String url = getResources().getString(R.string.network_url)+"record/"+myPhone+"/";
+                InternetUtil internetUtil = new InternetUtil(url);
+                String gettingResult  = internetUtil.putRecordMethod(gettingNewspaper.getGettingInformation());
+
+                if(gettingResult == "OK"){
+                    Toast.makeText(NewspaperInfoActivity.this,"领取成功",Toast.LENGTH_SHORT).show();
+                    intent.putExtra("gettingResult",gettingResut);
+                    intent.putExtra("gettingHistory",gettingHistory);
+                }else {
+                    Toast.makeText(NewspaperInfoActivity.this,"领取失败",Toast.LENGTH_SHORT).show();
+                }
+
+
             }else {
                 gettingResut = "该用户已领取";
                 intent.putExtra("gettingResult",gettingResut);
                 intent.putExtra("gettingHistory",gettingHistory);
-                Date curDate =  new Date(System.currentTimeMillis());
-                myTime = formatter.format(curDate);
-                lastGetting = new GettingNewspaper(myNewspaper,myPhone,myLocation,myTime);//test
+
+//                lastGetting = new GettingNewspaper(myNewspaper,myPhone,myLocation,myTime);//test
                 intent.putExtra("gettingInformation",lastGetting.toString());
 
             }
@@ -233,9 +267,9 @@ public class NewspaperInfoActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if(resultCode == RESULT_CODE && requestCode == REQUEST_CODE){
+            Toast.makeText(NewspaperInfoActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
             myPhone = data.getStringExtra("phone");
             isLogin = data.getBooleanExtra("isLogin",false);
-
         }
     }
 

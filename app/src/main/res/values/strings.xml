@@ -14,4 +14,7 @@
 
     <string name="scan_start_button">扫描报纸二维码</string>
     <string name="scan_already_button">使用上次扫描信息</string>
+
+    <string name="network_url">http://123.56.41.206/api/</string>
+
 </resources>

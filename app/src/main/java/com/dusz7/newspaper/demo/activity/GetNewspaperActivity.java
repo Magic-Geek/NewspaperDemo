@@ -12,6 +12,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -61,22 +62,29 @@ public class GetNewspaperActivity extends AppCompatActivity {
 
                     //判断是否注册
 
-                    String url = "";
+                    String url = getResources().getString(R.string.network_url)+"user/"+myPhone+"/";
+//                    Log.i("url",R.string.network_url);
                     InternetUtil internetUtil = new InternetUtil(url);
+
+                    String registerResult = internetUtil.getUserMethod();
+
                     try{
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("phone",myPhone);
+                        JSONObject jsonObject = new JSONObject(registerResult);
+                        isRegister = jsonObject.getBoolean("login_state");
+                        Log.i("isR",String.valueOf(jsonObject.getBoolean("login_state")));
+
                     }catch (JSONException e){
                         e.printStackTrace();
                     }
-                    //internetUtil.putMethod(jsonObject);
 
                     //涉及返回结果
                     Message msg = new Message();
                     if(isRegister){
                         msg.what = 0;
+                        Log.i("isRegister","用户已注册");
                     }else {
                         msg.what = 1;
+                        Log.i("isRegister","用户未注册");
                     }
 
                     handler.sendMessage(msg);
@@ -98,7 +106,7 @@ public class GetNewspaperActivity extends AppCompatActivity {
             super.handleMessage(msg);
             switch (msg.what){
                 case 0:
-                    Intent intent = new Intent();
+                    final Intent intent = new Intent();
                     intent.putExtra("phone",myPhone);
                     intent.putExtra("isLogin",true);
                     setResult(RESULT_CODE,intent);
@@ -120,8 +128,6 @@ public class GetNewspaperActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             //注册
 
-                            isRegister = true;
-
                             Thread registerThread = new Thread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -129,10 +135,23 @@ public class GetNewspaperActivity extends AppCompatActivity {
                                     //为手机用户注册
                                     try{
                                         JSONObject jsonObject = new JSONObject();
-                                        jsonObject.put("phone",myPhone);
+                                        jsonObject.put("phone_num",myPhone);
+                                        String url = getResources().getString(R.string.network_url)+"user/";
+                                        InternetUtil internetUtil = new InternetUtil(url);
+
+                                        String putResult = internetUtil.putUserMethod(jsonObject.toString());
+                                        if (putResult == "OK"){
+//                                            Toast.makeText(GetNewspaperActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
+                                            isRegister = true;
+                                        }else {
+//                                            Toast.makeText(GetNewspaperActivity.this,"注册失败",Toast.LENGTH_SHORT).show();
+                                            isRegister = false;
+                                        }
+
                                     }catch (JSONException e){
                                         e.printStackTrace();
                                     }
+
                                 }
                             });
                             //开启线程

@@ -49,14 +49,16 @@ public class GettingResultActivity extends AppCompatActivity {
         isGet = intent.getBooleanExtra("isGet",false);
         if(isGet){
             lastGetting = intent.getStringExtra("gettingInformation");
-            try {
-                JSONObject jsonObject = new JSONObject(lastGetting);
-                lastGettingLocation = jsonObject.getString("location");
-                lastGettingTime = jsonObject.getString("time");
-                lastGettingLocationText.setText("该期领取地点："+lastGettingLocation);
-                lastGettingTimeText.setText("该期领取时间："+lastGettingTime);
-            }catch (JSONException e){
-                e.printStackTrace();
+            if(lastGetting != "error"){
+                try {
+                    JSONObject jsonObject = new JSONObject(lastGetting);
+                    lastGettingLocation = jsonObject.getString("location");
+                    lastGettingTime = jsonObject.getString("time");
+                    lastGettingLocationText.setText("该期领取地点："+lastGettingLocation);
+                    lastGettingTimeText.setText("该期领取时间："+lastGettingTime);
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
             }
 
         }
