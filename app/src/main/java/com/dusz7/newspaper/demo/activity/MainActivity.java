@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         }catch (IOException e){
             e.printStackTrace();
         }
+
         if(!result.equals("")){
             startActivity(new Intent(MainActivity.this,NewspaperInfoActivity.class));
         }else {
@@ -65,17 +66,13 @@ public class MainActivity extends AppCompatActivity {
             try{
                 myInternalStorage.save(filename,content);
 //                Toast.makeText(MainActivity.this,"saved sucessfully",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this,NewspaperInfoActivity.class);
+                startActivity(intent);
             }catch (IOException e){
+                Toast.makeText(MainActivity.this,"信息存储失败，请重试！",Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
 
-            Intent intent = new Intent(MainActivity.this,NewspaperInfoActivity.class);
-            //intent.putExtra("decodeResult",data.getStringExtra(CaptureActivity.EXTRA_RESULT));
-            startActivity(intent);
-
-            //测试部分
-//            resultTv.setText(data.getStringExtra(CaptureActivity.EXTRA_RESULT));
-//            resultIv.setImageBitmap((Bitmap)data.getParcelableExtra(CaptureActivity.EXTRA_BITMAP));
         } else {
             Toast toast = Toast.makeText(getApplicationContext(),"扫描异常，请重试",Toast.LENGTH_SHORT);
             toast.show();

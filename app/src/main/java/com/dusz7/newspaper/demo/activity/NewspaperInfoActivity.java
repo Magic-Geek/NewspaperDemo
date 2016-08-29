@@ -8,6 +8,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -56,7 +57,8 @@ public class NewspaperInfoActivity extends AppCompatActivity {
 
     private String myPhone;
 
-    private boolean isGet = true;
+    private boolean isGet = false;
+    private boolean isContinue = false;
 
     private String gettingResut;
 
@@ -148,11 +150,11 @@ public class NewspaperInfoActivity extends AppCompatActivity {
     public void confirm_getting_onClick(View v){
 
         if (isLogin){
-            Toast.makeText(NewspaperInfoActivity.this,"已登录，查看结果",Toast.LENGTH_SHORT).show();
+            Toast.makeText(NewspaperInfoActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
+
             Thread gettingThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-
                     //线程执行内容
                     //发送手机号、报纸内容、地理位置
                     //得到返回值：是否已领取，领取历史记录
@@ -168,55 +170,84 @@ public class NewspaperInfoActivity extends AppCompatActivity {
 
                     InternetUtil internetUtil = new InternetUtil(url);
                     String getResult = internetUtil.getRecordMethod();
-                    try {
-                        JSONObject jsonObject = new JSONObject(getResult);
-                        gettingHistory = jsonObject.getInt("news_num");
-                        isGet = jsonObject.getBoolean("receive_state");
+                    if(getResult != null && getResult != ""){
+                        try {
+                            JSONObject jsonObject = new JSONObject(getResult);
+                            gettingHistory = jsonObject.getInt("news_num");
+                            isGet = jsonObject.getBoolean("receive_state");
 
-                        if(isGet){
-                            lastGetting = new GettingNewspaper(myNewspaper,myPhone,jsonObject.getString("station"),jsonObject.getString("time"));
+                            if(isGet){
+                                lastGetting = new GettingNewspaper(myNewspaper,myPhone,jsonObject.getString("station"),jsonObject.getString("time"));
+                            }
+
+                        }catch (JSONException e){
+                            e.printStackTrace();
                         }
-
-                    }catch (JSONException e){
-                        e.printStackTrace();
+                        isContinue = true;
+                    }else {
+                        isContinue = false;
+                        Looper.prepare();
+                        Toast.makeText(NewspaperInfoActivity.this,"访问服务器异常",Toast.LENGTH_SHORT).show();
+                        Looper.loop();
                     }
 
                 }
             });
-            //开启线程
-            gettingThread.start();
+
+            if(new InternetUtil().isNetworkConnected(NewspaperInfoActivity.this)){
+                //开启线程
+                gettingThread.start();
+            }else {
+                isContinue = false;
+                Toast.makeText(NewspaperInfoActivity.this,"网络不可用",Toast.LENGTH_SHORT).show();
+            }
 
             Intent intent = new Intent(NewspaperInfoActivity.this,GettingResultActivity.class);
 
             if(!isGet){
                 gettingResut = "领取成功";
 
-                String url = getResources().getString(R.string.network_url)+"record/"+myPhone+"/";
-                InternetUtil internetUtil = new InternetUtil(url);
-                String gettingResult  = internetUtil.putRecordMethod(gettingNewspaper.getGettingInformation());
+                Thread addRecordThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String url = getResources().getString(R.string.network_url)+"record/"+myPhone+"/";
+                        InternetUtil internetUtil = new InternetUtil(url);
+                        String gettingResult  = internetUtil.putRecordMethod(gettingNewspaper.getGettingInformation());
 
-                if(gettingResult == "OK"){
-                    Toast.makeText(NewspaperInfoActivity.this,"领取成功",Toast.LENGTH_SHORT).show();
-                    intent.putExtra("gettingResult",gettingResut);
-                    intent.putExtra("gettingHistory",gettingHistory);
+                        if(gettingResult == "OK"){
+                            isContinue = true;
+                            Looper.prepare();
+                            Toast.makeText(NewspaperInfoActivity.this,"领取成功",Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }else {
+                            isContinue = false;
+                            Looper.prepare();
+                            Toast.makeText(NewspaperInfoActivity.this,"访问服务器异常，领取失败",Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }
+                    }
+                });
+                if(new InternetUtil().isNetworkConnected(NewspaperInfoActivity.this)){
+                    addRecordThread.start();
                 }else {
-                    Toast.makeText(NewspaperInfoActivity.this,"领取失败",Toast.LENGTH_SHORT).show();
+                    isContinue = false;
+                    Toast.makeText(NewspaperInfoActivity.this,"网络不可用",Toast.LENGTH_SHORT);
                 }
-
 
             }else {
                 gettingResut = "该用户已领取";
+                intent.putExtra("gettingInformation",lastGetting.toString());
+                isContinue = true;
+            }
+
+            if(isContinue){
+                intent.putExtra("isGet",isGet);
                 intent.putExtra("gettingResult",gettingResut);
                 intent.putExtra("gettingHistory",gettingHistory);
 
-//                lastGetting = new GettingNewspaper(myNewspaper,myPhone,myLocation,myTime);//test
-                intent.putExtra("gettingInformation",lastGetting.toString());
-
+                startActivity(intent);
             }
 
-            intent.putExtra("isGet",isGet);
-
-            startActivity(intent);
         }
         else{
             Toast.makeText(NewspaperInfoActivity.this,"尚未登录，请登录",Toast.LENGTH_SHORT).show();

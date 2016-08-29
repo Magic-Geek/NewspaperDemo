@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -59,40 +60,47 @@ public class GetNewspaperActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     //线程执行内容
-
                     //判断是否注册
 
-                    String url = getResources().getString(R.string.network_url)+"user/"+myPhone+"/";
-//                    Log.i("url",R.string.network_url);
-                    InternetUtil internetUtil = new InternetUtil(url);
-
-                    String registerResult = internetUtil.getUserMethod();
-
-                    try{
-                        JSONObject jsonObject = new JSONObject(registerResult);
-                        isRegister = jsonObject.getBoolean("login_state");
-                        Log.i("isR",String.valueOf(jsonObject.getBoolean("login_state")));
-
-                    }catch (JSONException e){
-                        e.printStackTrace();
-                    }
-
-                    //涉及返回结果
+                    //handle传递
                     Message msg = new Message();
-                    if(isRegister){
-                        msg.what = 0;
-                        Log.i("isRegister","用户已注册");
-                    }else {
-                        msg.what = 1;
-                        Log.i("isRegister","用户未注册");
-                    }
 
-                    handler.sendMessage(msg);
+                    String url = getResources().getString(R.string.network_url)+"user/"+myPhone+"/";
+                    InternetUtil internetUtil = new InternetUtil(url);
+                    String registerResult = internetUtil.getUserMethod();
+                    if(registerResult != null && registerResult != ""){
+                        try{
+                            JSONObject jsonObject = new JSONObject(registerResult);
+                            isRegister = jsonObject.getBoolean("login_state");
+
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                        if(isRegister){
+                            msg.what = 0;
+                            Log.i("isRegister","用户已注册");
+                        }else {
+                            msg.what = 1;
+                            Log.i("isRegister","用户未注册");
+                        }
+                        handler.sendMessage(msg);
+                    }
+                    else {
+                        Looper.prepare();
+                        Toast.makeText(GetNewspaperActivity.this,"服务器访问异常",Toast.LENGTH_SHORT).show();
+                        Looper.loop();
+                    }
 
                 }
             });
             //开启线程
-            verificationThread.start();
+            if(new InternetUtil().isNetworkConnected(GetNewspaperActivity.this)){
+                verificationThread.start();
+            }
+            else {
+                Toast.makeText(GetNewspaperActivity.this,"网络不可用",Toast.LENGTH_SHORT).show();
+            }
+
         }else{
             Toast.makeText(GetNewspaperActivity.this,"非法手机号！",Toast.LENGTH_SHORT).show();
         }
@@ -111,23 +119,17 @@ public class GetNewspaperActivity extends AppCompatActivity {
                     intent.putExtra("isLogin",true);
                     setResult(RESULT_CODE,intent);
                     finish();
-                    //判断结果
-//                    String gettingResult = "Getting sucessfully!!";
-//                    intent.putExtra("gettingResult",gettingResult);
-
-//                    startActivity(intent);
                     break;
+
                 case 1:
                     AlertDialog.Builder builder = new AlertDialog.Builder(GetNewspaperActivity.this);
 
                     builder.setTitle("用户未注册");
                     builder.setMessage("如需继续操作，请为用户注册：\n"+myPhone);
-
                     builder.setPositiveButton("确定注册", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //注册
-
                             Thread registerThread = new Thread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -141,10 +143,14 @@ public class GetNewspaperActivity extends AppCompatActivity {
 
                                         String putResult = internetUtil.putUserMethod(jsonObject.toString());
                                         if (putResult == "OK"){
-//                                            Toast.makeText(GetNewspaperActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
+                                            Looper.prepare();
+                                            Toast.makeText(GetNewspaperActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
+                                            Looper.loop();
                                             isRegister = true;
                                         }else {
-//                                            Toast.makeText(GetNewspaperActivity.this,"注册失败",Toast.LENGTH_SHORT).show();
+                                            Looper.prepare();
+                                            Toast.makeText(GetNewspaperActivity.this,"服务器访问异常，注册失败",Toast.LENGTH_SHORT).show();
+                                            Looper.loop();
                                             isRegister = false;
                                         }
 
@@ -154,8 +160,12 @@ public class GetNewspaperActivity extends AppCompatActivity {
 
                                 }
                             });
-                            //开启线程
-                            registerThread.start();
+                            if(new InternetUtil().isNetworkConnected(GetNewspaperActivity.this)){
+                                //开启线程
+                                registerThread.start();
+                            }else {
+                                Toast.makeText(GetNewspaperActivity.this,"网络不可用",Toast.LENGTH_SHORT).show();
+                            }
 
                         }
                     });

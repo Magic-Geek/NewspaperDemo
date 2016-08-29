@@ -1,5 +1,8 @@
 package com.dusz7.newspaper.demo.internet;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -26,7 +29,6 @@ public class InternetUtil {
     private HttpURLConnection conn;
     private URL url;
 
-
     public InternetUtil(){
 
     }
@@ -35,6 +37,70 @@ public class InternetUtil {
         this.urlDate = urlDate;
     }
 
+    public boolean isNetworkConnected(Context context){
+        if(context != null){
+            ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            if(networkInfo != null){
+                return networkInfo.isAvailable();
+            }
+        }
+        return false;
+    }
+
+    //验证用户是否注册
+    public String getUserMethod(){
+        String state = "";
+        try {
+            //封装访问服务器的地址
+            url=new URL(urlDate);
+            try {
+                //打开对服务器的连接
+                conn=(HttpURLConnection) url.openConnection();
+
+                conn.setConnectTimeout(5000);           //设置连接超时时间
+                conn.setDoInput(true);                  //打开输入流，以便从服务器获取数据
+                conn.setRequestMethod("GET");
+                try {
+
+                    int response = conn.getResponseCode();            //获得服务器的响应码
+
+                    if(response == HttpURLConnection.HTTP_OK) {
+
+                        Log.i("response","getuser"+response);//处理服务器的响应结果
+
+                        /**读入服务器数据的过程**/
+                        //得到输入流
+                        InputStream is=conn.getInputStream();
+                        //创建包装流
+                        BufferedReader br=new BufferedReader(new InputStreamReader(is));
+                        //定义String类型用于储存单行数据
+                        String line=null;
+                        //创建StringBuffer对象用于存储所有数据
+                        StringBuffer sb=new StringBuffer();
+                        while((line=br.readLine())!=null){
+                            sb.append(line);
+                        }
+
+                        Log.i("get_responsed:",sb.toString());
+                        state = sb.toString();
+                    }
+
+                }finally {
+                    conn.disconnect();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return state;
+    }
+
+    //添加新用户（为用户注册）
     public String putUserMethod(String user){
 
         String state = "";
@@ -97,6 +163,59 @@ public class InternetUtil {
         return state;
     }
 
+    //验证是否已经领取
+    public String getRecordMethod(){
+        String state = "";
+        try {
+
+            //封装访问服务器的地址
+            url=new URL(urlDate);
+            try {
+
+                //打开对服务器的连接
+                conn=(HttpURLConnection) url.openConnection();
+
+                conn.setConnectTimeout(3000);           //设置连接超时时间
+                conn.setDoInput(true);                  //打开输入流，以便从服务器获取数据
+                conn.setRequestMethod("GET");
+
+                int response = conn.getResponseCode();            //获得服务器的响应码
+                Log.i("response","getrecord"+response);          //处理服务器的响应结果
+
+                if(response == HttpURLConnection.HTTP_OK) {
+
+                    /**读入服务器数据的过程**/
+                    //得到输入流
+                    InputStream is=conn.getInputStream();
+                    //创建包装流
+                    BufferedReader br=new BufferedReader(new InputStreamReader(is));
+                    //定义String类型用于储存单行数据
+                    String line=null;
+                    //创建StringBuffer对象用于存储所有数据
+                    StringBuffer sb=new StringBuffer();
+                    while((line=br.readLine())!=null){
+                        sb.append(line);
+                    }
+
+                    Log.i("get_responsed:",sb.toString());
+
+                    state = sb.toString();
+
+                }
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return state;
+    }
+
+    //添加领取记录（领取成功后）
     public String putRecordMethod(String record){
 
         String state = "";
@@ -159,111 +278,5 @@ public class InternetUtil {
         return state;
     }
 
-    public String getUserMethod(){
-        String state = "";
-        try {
-
-                //封装访问服务器的地址
-                url=new URL(urlDate);
-                try {
-                    //打开对服务器的连接
-                    conn=(HttpURLConnection) url.openConnection();
-
-                    conn.setConnectTimeout(5000);           //设置连接超时时间
-                    conn.setDoInput(true);                  //打开输入流，以便从服务器获取数据
-                    conn.setRequestMethod("GET");
-                    try {
-
-                        int response = conn.getResponseCode();            //获得服务器的响应码
-
-                        if(response == HttpURLConnection.HTTP_OK) {
-
-                            Log.i("response","getuser"+response);//处理服务器的响应结果
-
-                            /**读入服务器数据的过程**/
-                            //得到输入流
-                            InputStream is=conn.getInputStream();
-                            //创建包装流
-                            BufferedReader br=new BufferedReader(new InputStreamReader(is));
-                            //定义String类型用于储存单行数据
-                            String line=null;
-                            //创建StringBuffer对象用于存储所有数据
-                            StringBuffer sb=new StringBuffer();
-                            while((line=br.readLine())!=null){
-                                sb.append(line);
-                            }
-
-                            Log.i("get_responsed:",sb.toString());
-
-                            state = sb.toString();
-                        }
-
-
-                    }finally {
-                        conn.disconnect();
-                    }
-
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return state;
-    }
-
-    public String getRecordMethod(){
-        String state = "";
-        try {
-
-                //封装访问服务器的地址
-                url=new URL(urlDate);
-                try {
-
-                    //打开对服务器的连接
-                    conn=(HttpURLConnection) url.openConnection();
-
-                    conn.setConnectTimeout(3000);           //设置连接超时时间
-                    conn.setDoInput(true);                  //打开输入流，以便从服务器获取数据
-                    conn.setRequestMethod("GET");
-
-                    int response = conn.getResponseCode();            //获得服务器的响应码
-                    Log.i("response","getrecord"+response);          //处理服务器的响应结果
-
-                    if(response == HttpURLConnection.HTTP_OK) {
-
-                        /**读入服务器数据的过程**/
-                        //得到输入流
-                        InputStream is=conn.getInputStream();
-                        //创建包装流
-                        BufferedReader br=new BufferedReader(new InputStreamReader(is));
-                        //定义String类型用于储存单行数据
-                        String line=null;
-                        //创建StringBuffer对象用于存储所有数据
-                        StringBuffer sb=new StringBuffer();
-                        while((line=br.readLine())!=null){
-                            sb.append(line);
-                        }
-
-                        Log.i("get_responsed:",sb.toString());
-
-                        state = sb.toString();
-
-                    }
-
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return state;
-    }
 
 }
