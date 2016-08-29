@@ -5,7 +5,7 @@ package com.dusz7.newspaper.demo.newspaper;
  */
 public class GettingNewspaper {
     private Newspaper newspaper;
-    private String phone = "test1";
+    private String phone = "error";
     private String location;
     private String time;
 
@@ -30,18 +30,34 @@ public class GettingNewspaper {
         return gettingInformation;
     }
 
+    public String getLastGetting(){
+        String gettingInformation = "";
+
+        if (phone !="error"){
+
+            gettingInformation = "{" +
+                    "\"name\":\""+this.newspaper.getName()+"\"," +
+                    "\"jou_id\":\""+this.newspaper.getTotalIssue()+"\"," +
+//                "\"phone\":\""+this.phone+"\"," +
+                    "\"station\":\""+this.location+"\"," +
+                    "\"date\":\""+this.time+"\"" +
+                    "}";
+        }else {
+            gettingInformation = "error";
+        }
+
+        return gettingInformation;
+    }
+
     public GettingNewspaper(){
 
     }
 
     @Override
     public String toString(){
-        if(phone == "test1"){
-            return "error";
-        }else {
-            String result = getGettingInformation();
-            return result;
-        }
+
+        String result = getGettingInformation();
+        return result;
 
     }
 }

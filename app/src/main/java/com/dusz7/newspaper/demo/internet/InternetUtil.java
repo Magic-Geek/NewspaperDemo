@@ -116,36 +116,35 @@ public class InternetUtil {
                     conn=(HttpURLConnection) url.openConnection();
 
                     conn.setConnectTimeout(3000);           //设置连接超时时间
-                    conn.setDoInput(true);                  //打开输入流，以便从服务器获取数据
                     conn.setDoOutput(true);                 //打开输出流，以便向服务器提交数据
                     conn.setRequestMethod("PUT");
                     conn.setUseCaches(false);
 
+                    byte[] data = jsonTest.toString().getBytes();
+
+                    //设置请求体的类型是文本类型
+                    conn.setRequestProperty("Content-Type", "application/json");
+                    conn.setRequestProperty("Accept", "application/json");
+                    conn.setRequestProperty("Charset", "UTF-8");
+                    //设置请求体的长度
+                    conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+                    //获得输出流，向服务器写入数据
+                    OutputStream outputStream = conn.getOutputStream();
+
+                    DataOutputStream dos = new DataOutputStream(outputStream);
+                    dos.write(data);
+
+                    dos.flush();
+                    dos.close();
+
                     int response = conn.getResponseCode();            //获得服务器的响应码
+                    Log.i("response","adduser"+response);//处理服务器的响应结果
 
                     if(response == HttpURLConnection.HTTP_OK) {
 
-                        Log.i("response","adduser"+response);//处理服务器的响应结果
                         state = "OK";
 
-                        byte[] data = jsonTest.toString().getBytes();
-
-                        //设置请求体的类型是文本类型
-                        conn.setRequestProperty("Content-Type", "application/json");
-                        conn.setRequestProperty("Accept", "application/json");
-                        conn.setRequestProperty("Charset", "UTF-8");
-                        //设置请求体的长度
-                        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
-                        //获得输出流，向服务器写入数据
-                        OutputStream outputStream = conn.getOutputStream();
-
-                        DataOutputStream dos = new DataOutputStream(outputStream);
-                        dos.write(data);
-
-                        dos.flush();
-                        dos.close();
                     }
-
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -203,7 +202,6 @@ public class InternetUtil {
 
                 }
 
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -231,34 +229,34 @@ public class InternetUtil {
                     conn=(HttpURLConnection) url.openConnection();
 
                     conn.setConnectTimeout(3000);           //设置连接超时时间
-                    conn.setDoInput(true);                  //打开输入流，以便从服务器获取数据
                     conn.setDoOutput(true);                 //打开输出流，以便向服务器提交数据
                     conn.setRequestMethod("PUT");
                     conn.setUseCaches(false);
 
+                    byte[] data = jsonTest.toString().getBytes();
+
+                    //设置请求体的类型是文本类型
+                    conn.setRequestProperty("Content-Type", "application/json");
+                    conn.setRequestProperty("Accept", "application/json");
+                    conn.setRequestProperty("Charset", "UTF-8");
+                    //设置请求体的长度
+                    conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+                    //获得输出流，向服务器写入数据
+                    OutputStream outputStream = conn.getOutputStream();
+
+                    DataOutputStream dos = new DataOutputStream(outputStream);
+                    dos.write(data);
+
+                    dos.flush();
+                    dos.close();
+
                     int response = conn.getResponseCode();            //获得服务器的响应码
+                    Log.i("response","addrecord"+response);//处理服务器的响应结果
 
                     if(response == HttpURLConnection.HTTP_OK) {
 
-                        Log.i("response","addrecord"+response);//处理服务器的响应结果
                         state = "OK";
 
-                        byte[] data = jsonTest.toString().getBytes();
-
-                        //设置请求体的类型是文本类型
-                        conn.setRequestProperty("Content-Type", "application/json");
-                        conn.setRequestProperty("Accept", "application/json");
-                        conn.setRequestProperty("Charset", "UTF-8");
-                        //设置请求体的长度
-                        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
-                        //获得输出流，向服务器写入数据
-                        OutputStream outputStream = conn.getOutputStream();
-
-                        DataOutputStream dos = new DataOutputStream(outputStream);
-                        dos.write(data);
-
-                        dos.flush();
-                        dos.close();
 
                     }
 

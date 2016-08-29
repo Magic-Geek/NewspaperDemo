@@ -44,6 +44,9 @@ public class GettingResultActivity extends AppCompatActivity {
         resultText.setText(gettingResult);
 
         gettingHistory = intent.getIntExtra("gettingHistory",0);
+        if(!isGet){
+            gettingHistory++;
+        }
         gettingHistoryText.setText("该用户已经领取的期数： "+String.valueOf(gettingHistory));
 
         isGet = intent.getBooleanExtra("isGet",false);
@@ -52,8 +55,8 @@ public class GettingResultActivity extends AppCompatActivity {
             if(lastGetting != "error"){
                 try {
                     JSONObject jsonObject = new JSONObject(lastGetting);
-                    lastGettingLocation = jsonObject.getString("location");
-                    lastGettingTime = jsonObject.getString("time");
+                    lastGettingLocation = jsonObject.getString("station");
+                    lastGettingTime = jsonObject.getString("date");
                     lastGettingLocationText.setText("该期领取地点："+lastGettingLocation);
                     lastGettingTimeText.setText("该期领取时间："+lastGettingTime);
                 }catch (JSONException e){
