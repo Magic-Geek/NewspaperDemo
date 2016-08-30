@@ -37,6 +37,8 @@ public class GetNewspaperActivity extends AppCompatActivity {
 
     private boolean isRegister = false;
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -45,6 +47,7 @@ public class GetNewspaperActivity extends AppCompatActivity {
 
         phoneEditText = (EditText)findViewById(R.id.phone_edit_text);
         phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
+
 
         MyPhoneStateListener phoneListener = new MyPhoneStateListener(); //我们派生的类
         TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);

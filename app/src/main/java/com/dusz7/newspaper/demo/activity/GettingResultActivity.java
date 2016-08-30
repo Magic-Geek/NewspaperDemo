@@ -44,6 +44,8 @@ public class GettingResultActivity extends AppCompatActivity {
         resultText.setText(gettingResult);
 
         gettingHistory = intent.getIntExtra("gettingHistory",0);
+
+        isGet = intent.getBooleanExtra("isGet",false);
         if(!isGet){
             gettingHistory++;
         }

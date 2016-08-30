@@ -10,7 +10,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -30,6 +29,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by dusz2 on 2016/7/20 0020.
@@ -45,9 +45,12 @@ public class NewspaperInfoActivity extends AppCompatActivity {
     private TextView totalIssueText;
 
     protected LocationManager locationManager;
+    private String provider;
+    private Location location;
+    private LocationListener locationListener;
 
     private String myLatitude;
-    private String myAltitude;
+    private String myLongitude;
     private String myLocation;
 
     SimpleDateFormat formatter;
@@ -64,8 +67,6 @@ public class NewspaperInfoActivity extends AppCompatActivity {
 
     final int REQUEST_CODE = 1;
     final int RESULT_CODE = 11;
-
-    final int REQUEST_PERMISSION_FINE_LOCATION_CODE = 20;
 
     private int gettingHistory;
 
@@ -103,48 +104,87 @@ public class NewspaperInfoActivity extends AppCompatActivity {
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        if(!isGpsAble(locationManager)){
-            Toast.makeText(NewspaperInfoActivity.this, "定位服务未打开", Toast.LENGTH_SHORT).show();
+//        if(!isGpsAble(locationManager)){
+//            Toast.makeText(NewspaperInfoActivity.this, "定位服务未打开", Toast.LENGTH_SHORT).show();
+//            openGPS2();
+//        }
+
+        // 获取所有可用的位置提供器
+        List<String> providerList = locationManager.getProviders(true);
+        if (providerList.contains(LocationManager.GPS_PROVIDER)) {
+            provider = LocationManager.GPS_PROVIDER;
+        }
+        else if (providerList.contains(LocationManager.NETWORK_PROVIDER)) {
+            provider = LocationManager.NETWORK_PROVIDER;
+        }
+        else {
+            // 没有可用的位置提供器
+            Toast.makeText(NewspaperInfoActivity.this, "定位不可用", Toast.LENGTH_SHORT).show();
             openGPS2();
+            return;
         }
+        Log.i("provider",provider);
 
-        if (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(NewspaperInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            //has permission, do operation directly
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                // 当GPS定位信息发生改变时，更新定位
+                updateLocation(location);
+            }
 
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
 
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+                // 当GPS LocationProvider可用时，更新定位
+                if (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(NewspaperInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    updateLocation(locationManager.getLastKnownLocation(provider));
+                }
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+        //设置间隔两秒获得一次GPS定位信息
+        locationManager.requestLocationUpdates(provider, 2000, 8, locationListener);
+
+        location = locationManager.getLastKnownLocation(provider);
+
+        if(location != null){
+            Log.i("location",String.valueOf(location.getLongitude()));
             updateLocation(location);
-            //设置间隔两秒获得一次GPS定位信息
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 8, new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    // 当GPS定位信息发生改变时，更新定位
-                    updateLocation(location);
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-                    // 当GPS LocationProvider可用时，更新定位
-                    if (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(NewspaperInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        updateLocation(locationManager.getLastKnownLocation(provider));
-                    }
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-                    updateLocation(null);
-                }
-            });
-
-        } else {
-            ActivityCompat.requestPermissions(NewspaperInfoActivity.this, new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_FINE_LOCATION_CODE);
         }
 
+    }
+
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(provider != null){
+            if (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(NewspaperInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+            }
+            locationManager.requestLocationUpdates(provider, 2000, 8, locationListener);
+        }
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        if(locationManager != null){
+            if (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(NewspaperInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+            }
+            locationManager.removeUpdates(locationListener);
+        }
     }
 
     public void confirm_getting_onClick(View v){
@@ -279,9 +319,9 @@ public class NewspaperInfoActivity extends AppCompatActivity {
 
     }
 
-    private boolean isGpsAble(LocationManager lm){
-        return lm.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)?true:false;
-    }
+//    private boolean isGpsAble(LocationManager lm){
+//        return lm.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)?true:false;
+//    }
 
     private void openGPS2(){
         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -292,7 +332,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
         if (location != null) {
 //            StringBuilder sb = new StringBuilder();
 //            sb.append("当前的位置信息：\n");
-//            sb.append("精度：" + location.getLongitude() + "\n");
+//            sb.append("经度：" + location.getLongitude() + "\n");
 //            sb.append("纬度：" + location.getLatitude() + "\n");
 //            sb.append("高度：" + location.getAltitude() + "\n");
 //            sb.append("速度：" + location.getSpeed() + "\n");
@@ -300,21 +340,12 @@ public class NewspaperInfoActivity extends AppCompatActivity {
 //            sb.append("定位精度：" + location.getAccuracy() + "\n");
 
             myLatitude = String.valueOf(location.getLatitude());
-            myAltitude = String.valueOf(location.getAltitude());
-            myLocation = myLatitude+","+myAltitude;
+            myLongitude = String.valueOf(location.getLongitude());
+            myLocation = "("+myLatitude+","+myLongitude+")";
 
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSION_FINE_LOCATION_CODE) {
-            int grantResult = grantResults[0];
-            boolean granted = grantResult == PackageManager.PERMISSION_GRANTED;
-//            Log.i(DEBUG_TAG, "onRequestPermissionsResult granted=" + granted);
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
