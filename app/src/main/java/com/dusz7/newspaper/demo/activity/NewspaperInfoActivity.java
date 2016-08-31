@@ -153,7 +153,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
         };
 
         //设置间隔两秒获得一次GPS定位信息
-        locationManager.requestLocationUpdates(provider, 2000, 8, locationListener);
+        locationManager.requestLocationUpdates(provider, 0, 0, locationListener);
 
         location = locationManager.getLastKnownLocation(provider);
 
@@ -190,7 +190,6 @@ public class NewspaperInfoActivity extends AppCompatActivity {
     public void confirm_getting_onClick(View v){
 
         if (isLogin){
-//            Toast.makeText(NewspaperInfoActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
 
             Thread gettingThread = new Thread(new Runnable() {
                 @Override
@@ -353,6 +352,127 @@ public class NewspaperInfoActivity extends AppCompatActivity {
             Toast.makeText(NewspaperInfoActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
             myPhone = data.getStringExtra("phone");
             isLogin = data.getBooleanExtra("isLogin",false);
+
+            if(isLogin){
+
+                Thread gettingThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //线程执行内容
+                        //发送手机号、报纸内容、地理位置
+                        //得到返回值：是否已领取，领取历史记录
+
+                        Date curDate =  new Date(System.currentTimeMillis());
+                        myTime = formatter.format(curDate);
+
+                        gettingNewspaper = new GettingNewspaper(myNewspaper,myPhone,myLocation,myTime);
+
+                        Log.i("领取情况",gettingNewspaper.toString());
+
+                        String url = getResources().getString(R.string.network_url) + "record/"+myPhone+"/?name="+myNewspaper.getName()+"&jou_id="+myNewspaper.getTotalIssue();
+                        Log.i("test",url);
+
+                        InternetUtil internetUtil = new InternetUtil(url);
+                        String getResult = internetUtil.getRecordMethod();
+                        if(getResult != null && getResult != ""){
+                            isContinue = true;
+                            try {
+                                JSONObject jsonObject = new JSONObject(getResult);
+                                gettingHistory = jsonObject.getInt("news_num");
+                                isGet = jsonObject.getBoolean("receive_state");
+
+                                Log.i("isGet",String.valueOf(isGet));
+                                if(isGet){
+                                    lastGetting = new GettingNewspaper(myNewspaper,myPhone,jsonObject.getString("station"),jsonObject.getString("date"));
+                                }
+
+                            }catch (JSONException e){
+                                e.printStackTrace();
+                            }
+                        }else {
+                            isContinue = false;
+                            Looper.prepare();
+                            Toast.makeText(NewspaperInfoActivity.this,"访问服务器异常",Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }
+
+                    }
+                });
+
+                if(new InternetUtil().isNetworkConnected(NewspaperInfoActivity.this)){
+                    //开启线程
+                    gettingThread.start();
+                    try
+                    {
+                        gettingThread.join();
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }else {
+                    isContinue = false;
+                    Toast.makeText(NewspaperInfoActivity.this,"网络不可用",Toast.LENGTH_SHORT).show();
+                }
+
+                Intent intent = new Intent(NewspaperInfoActivity.this,GettingResultActivity.class);
+
+                Log.i("isGet",String.valueOf(isGet));
+
+                if(!isGet){
+                    gettingResut = "领取成功";
+
+                    Thread addRecordThread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String url = getResources().getString(R.string.network_url)+"record/"+myPhone+"/";
+                            InternetUtil internetUtil = new InternetUtil(url);
+
+                            String gettingResult  = internetUtil.putRecordMethod(gettingNewspaper.getGettingInformation());
+
+                            if(gettingResult == "OK"){
+                                isContinue = true;
+                                Looper.prepare();
+                                Toast.makeText(NewspaperInfoActivity.this,"领取成功",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }else {
+                                isContinue = false;
+                                Looper.prepare();
+                                Toast.makeText(NewspaperInfoActivity.this,"访问服务器异常，领取失败",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                        }
+                    });
+                    if(new InternetUtil().isNetworkConnected(NewspaperInfoActivity.this)){
+                        addRecordThread.start();
+//                    try {
+//                        addRecordThread.join();
+//                    } catch (InterruptedException e)
+//                    {
+//                        e.printStackTrace();
+//                    }
+                    }else {
+                        isContinue = false;
+                        Toast.makeText(NewspaperInfoActivity.this,"网络不可用",Toast.LENGTH_SHORT);
+                    }
+
+                }else {
+                    gettingResut = "该用户已领取";
+                    intent.putExtra("gettingInformation",lastGetting.getLastGetting());
+                    isContinue = true;
+                }
+
+                Log.i("isContinue",String.valueOf(isContinue));
+
+                if(isContinue){
+                    intent.putExtra("isGet",isGet);
+                    intent.putExtra("gettingResult",gettingResut);
+                    intent.putExtra("gettingHistory",gettingHistory);
+
+                    startActivity(intent);
+                    this.finish();
+                }
+            }
         }
     }
 
