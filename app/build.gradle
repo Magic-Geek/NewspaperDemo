@@ -9,11 +9,18 @@ android {
             storeFile file('../newspaper.jks')
             storePassword 'newspaper'
         }
+
+        debug{
+            keyAlias 'newspaper'
+            keyPassword 'newspaper'
+            storeFile file('../newspaper.jks')
+            storePassword 'newspaper'
+        }
     }
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
     defaultConfig {
-        applicationId "com.dusz7.newspaper.demo"
+        applicationId 'com.tsb.newspaper.management'
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
@@ -25,7 +32,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            signingConfig signingConfigs.debug
+        }
     }
+
     productFlavors {
     }
 }

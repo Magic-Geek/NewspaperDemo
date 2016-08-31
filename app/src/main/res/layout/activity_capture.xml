@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.dusz7.newspaper.demo.view.CaptureView
+        <com.tsb.newspaper.management.view.CaptureView
             android:id="@+id/cv_capture"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
