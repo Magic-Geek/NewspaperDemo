@@ -49,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void test_onClick(View v){
+        startActivity(new Intent(MainActivity.this,TestActivity.class));
+    }
 
     public void scan_start_onClick(View v) {
 

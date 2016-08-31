@@ -43,6 +43,7 @@ android {
 
 dependencies {
     compile files('libs/zxing.jar')
+    compile files('libs/AMap_Location_V2.8.0_20160811.jar')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.2.1'
 }

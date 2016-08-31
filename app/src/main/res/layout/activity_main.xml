@@ -29,6 +29,17 @@
         android:textSize="17sp"
         style="@style/Widget.AppCompat.Button.Colored"/>
 
+    <Button
+
+        android:layout_width="175dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="100dp"
+        android:layout_gravity="center_horizontal"
+        android:onClick="test_onClick"
+        android:text="test"
+        android:textSize="17sp"
+        style="@style/Widget.AppCompat.Button.Colored"/>
+
 
 
 
