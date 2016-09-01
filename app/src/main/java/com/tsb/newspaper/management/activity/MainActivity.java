@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -49,9 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void test_onClick(View v){
-        startActivity(new Intent(MainActivity.this,TestActivity.class));
-    }
 
     public void scan_start_onClick(View v) {
 
@@ -86,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
             MyInternalStorage myInternalStorage = new MyInternalStorage(MainActivity.this);
             String filename = "myNewspaper";
             String content = data.getStringExtra(CaptureActivity.EXTRA_RESULT);
+
+            Log.i("qrcode",content);
             try{
                 myInternalStorage.save(filename,content);
 //                Toast.makeText(MainActivity.this,"saved sucessfully",Toast.LENGTH_SHORT).show();

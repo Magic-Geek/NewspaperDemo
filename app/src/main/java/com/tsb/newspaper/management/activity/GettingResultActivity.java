@@ -3,6 +3,8 @@ package com.tsb.newspaper.management.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tsb.newspaper.management.R;
@@ -25,6 +27,7 @@ public class GettingResultActivity extends AppCompatActivity {
     private TextView gettingHistoryText;
     private TextView lastGettingTimeText;
     private TextView lastGettingLocationText;
+    private LinearLayout alreadyGettingLinear;
 
     private boolean isGet;
 
@@ -38,6 +41,8 @@ public class GettingResultActivity extends AppCompatActivity {
         lastGettingTimeText = (TextView)findViewById(R.id.lastGettingTime_textview);
         lastGettingLocationText = (TextView)findViewById(R.id.lastGettingLocation_textview);
 
+        alreadyGettingLinear = (LinearLayout)findViewById(R.id.alreadyGetting);
+
         Intent intent = this.getIntent();
 
         gettingResult = intent.getStringExtra("gettingResult");
@@ -47,20 +52,22 @@ public class GettingResultActivity extends AppCompatActivity {
 
         isGet = intent.getBooleanExtra("isGet",false);
         if(!isGet){
+            alreadyGettingLinear.setVisibility(View.GONE);
             gettingHistory++;
         }
-        gettingHistoryText.setText("已领取的期数： "+String.valueOf(gettingHistory));
+        gettingHistoryText.setText(String.valueOf(gettingHistory)+" 期");
 
-        isGet = intent.getBooleanExtra("isGet",false);
+
         if(isGet){
+            alreadyGettingLinear.setVisibility(View.VISIBLE);
             lastGetting = intent.getStringExtra("gettingInformation");
             if(lastGetting != "error"){
                 try {
                     JSONObject jsonObject = new JSONObject(lastGetting);
                     lastGettingLocation = jsonObject.getString("station");
                     lastGettingTime = jsonObject.getString("date");
-                    lastGettingLocationText.setText("领取地点："+lastGettingLocation);
-                    lastGettingTimeText.setText("领取时间："+lastGettingTime);
+                    lastGettingLocationText.setText(lastGettingLocation);
+                    lastGettingTimeText.setText(lastGettingTime);
                 }catch (JSONException e){
                     e.printStackTrace();
                 }

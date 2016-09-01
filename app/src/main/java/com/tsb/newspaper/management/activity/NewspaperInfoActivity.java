@@ -1,15 +1,11 @@
 package com.tsb.newspaper.management.activity;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
-import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,11 +13,16 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.tsb.newspaper.management.R;
 import com.tsb.newspaper.management.infoSaved.MyInternalStorage;
 import com.tsb.newspaper.management.internet.InternetUtil;
 import com.tsb.newspaper.management.newspaper.GettingNewspaper;
 import com.tsb.newspaper.management.newspaper.Newspaper;
+import com.tsb.newspaper.management.util.Utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,7 +30,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by dusz2 on 2016/7/20 0020.
@@ -44,13 +44,12 @@ public class NewspaperInfoActivity extends AppCompatActivity {
     private TextView issueText;
     private TextView totalIssueText;
 
-    protected LocationManager locationManager;
-    private String provider;
-    private Location location;
-    private LocationListener locationListener;
+    private AMapLocationClient locationClient = null;
+    private AMapLocationClientOption locationOption = new AMapLocationClientOption();
 
-    private String myLatitude;
-    private String myLongitude;
+    private final int WRITE_COARSE_LOCATION_REQUEST_CODE = 0;
+    private final int WRITE_FINE_LOCATION_REQUEST_CODE = 1;
+
     private String myLocation;
 
     SimpleDateFormat formatter;
@@ -102,90 +101,25 @@ public class NewspaperInfoActivity extends AppCompatActivity {
 
         formatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
 
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
 
-//        if(!isGpsAble(locationManager)){
-//            Toast.makeText(NewspaperInfoActivity.this, "定位服务未打开", Toast.LENGTH_SHORT).show();
-//            openGPS2();
-//        }
-
-        // 获取所有可用的位置提供器
-        List<String> providerList = locationManager.getProviders(true);
-        if (providerList.contains(LocationManager.GPS_PROVIDER)) {
-            provider = LocationManager.GPS_PROVIDER;
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    WRITE_COARSE_LOCATION_REQUEST_CODE);//自定义的code
         }
-        else if (providerList.contains(LocationManager.NETWORK_PROVIDER)) {
-            provider = LocationManager.NETWORK_PROVIDER;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    WRITE_FINE_LOCATION_REQUEST_CODE);//自定义的code
         }
-        else {
-            // 没有可用的位置提供器
-            Toast.makeText(NewspaperInfoActivity.this, "定位不可用", Toast.LENGTH_SHORT).show();
-            openGPS2();
-            return;
-        }
-        Log.i("provider",provider);
 
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                // 当GPS定位信息发生改变时，更新定位
-                updateLocation(location);
-            }
+        initLocation();
+        startLocation();
 
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-                // 当GPS LocationProvider可用时，更新定位
-                if (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(NewspaperInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    updateLocation(locationManager.getLastKnownLocation(provider));
-                }
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-
-        //设置间隔两秒获得一次GPS定位信息
-        locationManager.requestLocationUpdates(provider, 0, 0, locationListener);
-
-        location = locationManager.getLastKnownLocation(provider);
-
-        if(location != null){
-            Log.i("location",String.valueOf(location.getLongitude()));
-            updateLocation(location);
-        }
 
     }
 
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        if(provider != null){
-            if (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(NewspaperInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-            }
-            locationManager.requestLocationUpdates(provider, 2000, 8, locationListener);
-        }
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if(locationManager != null){
-            if (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(NewspaperInfoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-            }
-            locationManager.removeUpdates(locationListener);
-        }
-    }
 
     public void confirm_getting_onClick(View v){
 
@@ -311,45 +245,17 @@ public class NewspaperInfoActivity extends AppCompatActivity {
         }
         else{
             Toast.makeText(NewspaperInfoActivity.this,"尚未登录，请登录",Toast.LENGTH_SHORT).show();
-//            myNewspaper.saveNewspaperInformation();
             Intent intent = new Intent(NewspaperInfoActivity.this,GetNewspaperActivity.class);
             startActivityForResult(intent,REQUEST_CODE);
         }
 
     }
 
-//    private boolean isGpsAble(LocationManager lm){
-//        return lm.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)?true:false;
-//    }
-
-    private void openGPS2(){
-        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        startActivityForResult(intent,0);
-    }
-
-    private void updateLocation(Location location) {
-        if (location != null) {
-//            StringBuilder sb = new StringBuilder();
-//            sb.append("当前的位置信息：\n");
-//            sb.append("经度：" + location.getLongitude() + "\n");
-//            sb.append("纬度：" + location.getLatitude() + "\n");
-//            sb.append("高度：" + location.getAltitude() + "\n");
-//            sb.append("速度：" + location.getSpeed() + "\n");
-//            sb.append("方向：" + location.getBearing() + "\n");
-//            sb.append("定位精度：" + location.getAccuracy() + "\n");
-
-            myLatitude = String.valueOf(location.getLatitude());
-            myLongitude = String.valueOf(location.getLongitude());
-            myLocation = "("+myLatitude+","+myLongitude+")";
-
-        }
-    }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if(resultCode == RESULT_CODE && requestCode == REQUEST_CODE){
-            Toast.makeText(NewspaperInfoActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
+//            Toast.makeText(NewspaperInfoActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
             myPhone = data.getStringExtra("phone");
             isLogin = data.getBooleanExtra("isLogin",false);
 
@@ -391,9 +297,6 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                             }
                         }else {
                             isContinue = false;
-                            Looper.prepare();
-                            Toast.makeText(NewspaperInfoActivity.this,"访问服务器异常",Toast.LENGTH_SHORT).show();
-                            Looper.loop();
                         }
 
                     }
@@ -417,52 +320,53 @@ public class NewspaperInfoActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(NewspaperInfoActivity.this,GettingResultActivity.class);
 
-                Log.i("isGet",String.valueOf(isGet));
+                if(isContinue){
+                    if(!isGet){
+                        gettingResut = "领取成功";
 
-                if(!isGet){
-                    gettingResut = "领取成功";
+                        Thread addRecordThread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String url = getResources().getString(R.string.network_url)+"record/"+myPhone+"/";
+                                InternetUtil internetUtil = new InternetUtil(url);
 
-                    Thread addRecordThread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String url = getResources().getString(R.string.network_url)+"record/"+myPhone+"/";
-                            InternetUtil internetUtil = new InternetUtil(url);
+                                String gettingResult  = internetUtil.putRecordMethod(gettingNewspaper.getGettingInformation());
 
-                            String gettingResult  = internetUtil.putRecordMethod(gettingNewspaper.getGettingInformation());
-
-                            if(gettingResult == "OK"){
-                                isContinue = true;
-                                Looper.prepare();
-                                Toast.makeText(NewspaperInfoActivity.this,"领取成功",Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }else {
-                                isContinue = false;
-                                Looper.prepare();
-                                Toast.makeText(NewspaperInfoActivity.this,"访问服务器异常，领取失败",Toast.LENGTH_SHORT).show();
-                                Looper.loop();
+                                if(gettingResult == "OK"){
+                                    isContinue = true;
+                                    Looper.prepare();
+                                    Toast.makeText(NewspaperInfoActivity.this,"领取成功",Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }else {
+                                    isContinue = false;
+                                    Looper.prepare();
+                                    Toast.makeText(NewspaperInfoActivity.this,"访问服务器异常，领取失败",Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
                             }
-                        }
-                    });
-                    if(new InternetUtil().isNetworkConnected(NewspaperInfoActivity.this)){
-                        addRecordThread.start();
+                        });
+                        if(new InternetUtil().isNetworkConnected(NewspaperInfoActivity.this)){
+                            addRecordThread.start();
 //                    try {
 //                        addRecordThread.join();
 //                    } catch (InterruptedException e)
 //                    {
 //                        e.printStackTrace();
 //                    }
-                    }else {
-                        isContinue = false;
-                        Toast.makeText(NewspaperInfoActivity.this,"网络不可用",Toast.LENGTH_SHORT);
-                    }
+                        }else {
+                            isContinue = false;
+                            Toast.makeText(NewspaperInfoActivity.this,"网络不可用",Toast.LENGTH_SHORT);
+                        }
 
-                }else {
-                    gettingResut = "该用户已领取";
-                    intent.putExtra("gettingInformation",lastGetting.getLastGetting());
-                    isContinue = true;
+                    }else {
+                        gettingResut = "该用户已领取";
+                        intent.putExtra("gettingInformation",lastGetting.getLastGetting());
+                        isContinue = true;
+                    }
+                }else{
+                    Toast.makeText(NewspaperInfoActivity.this,"报纸信息未入库或访问信息错误，请重试",Toast.LENGTH_SHORT).show();
                 }
 
-                Log.i("isContinue",String.valueOf(isContinue));
 
                 if(isContinue){
                     intent.putExtra("isGet",isGet);
@@ -473,6 +377,108 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                     this.finish();
                 }
             }
+
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        destroyLocation();
+    }
+
+    private void initLocation(){
+        //初始化client
+        locationClient = new AMapLocationClient(this.getApplicationContext());
+        //设置定位参数
+        locationClient.setLocationOption(getDefaultOption());
+        // 设置定位监听
+        locationClient.setLocationListener(locationListener);
+    }
+
+    private AMapLocationClientOption getDefaultOption(){
+        AMapLocationClientOption mOption = new AMapLocationClientOption();
+        mOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Battery_Saving);//可选，设置定位模式，可选的模式有高精度、仅设备、仅网络。默认为高精度模式
+        mOption.setGpsFirst(false);//可选，设置是否gps优先，只在高精度模式下有效。默认关闭
+        mOption.setHttpTimeOut(30000);//可选，设置网络请求超时时间。默认为30秒。在仅设备模式下无效
+        mOption.setInterval(2000);//可选，设置定位间隔。默认为2秒
+        mOption.setNeedAddress(true);//可选，设置是否返回逆地理地址信息。默认是ture
+        mOption.setOnceLocation(false);//可选，设置是否单次定位。默认是false
+        mOption.setOnceLocationLatest(false);//可选，设置是否等待wifi刷新，默认为false.如果设置为true,会自动变为单次定位，持续定位时不要使用
+        return mOption;
+    }
+
+    /**
+     * 定位监听
+     */
+    AMapLocationListener locationListener = new AMapLocationListener() {
+        @Override
+        public void onLocationChanged(AMapLocation loc) {
+            if (null != loc) {
+                //解析定位结果
+                String result = Utils.getMyLocation(loc);
+                Log.i("location",result);
+                myLocation = result;
+            } else {
+            }
+        }
+    };
+
+    /**
+     * 开始定位
+     *
+     * @since 2.8.0
+     * @author hongming.wang
+     *
+     */
+    private void startLocation(){
+
+        // 设置定位参数
+        locationClient.setLocationOption(locationOption);
+        // 启动定位
+        locationClient.startLocation();
+    }
+
+    /**
+     * 停止定位
+     *
+     * @since 2.8.0
+     * @author hongming.wang
+     *
+     */
+//    private void stopLocation(){
+//        // 停止定位
+//        locationClient.stopLocation();
+//    }
+
+    /**
+     * 销毁定位
+     *
+     * @since 2.8.0
+     * @author hongming.wang
+     *
+     */
+    private void destroyLocation(){
+        if (null != locationClient) {
+            /**
+             * 如果AMapLocationClient是在当前Activity实例化的，
+             * 在Activity的onDestroy中一定要执行AMapLocationClient的onDestroy
+             */
+            locationClient.onDestroy();
+            locationClient = null;
+            locationOption = null;
         }
     }
 

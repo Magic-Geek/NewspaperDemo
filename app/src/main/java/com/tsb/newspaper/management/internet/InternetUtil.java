@@ -166,7 +166,6 @@ public class InternetUtil {
     public String getRecordMethod(){
         String state = "";
         try {
-
             //封装访问服务器的地址
             url=new URL(urlDate);
             try {
@@ -210,6 +209,7 @@ public class InternetUtil {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+
         return state;
     }
 
