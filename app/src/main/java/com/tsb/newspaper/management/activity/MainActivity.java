@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         } else {
-            Toast toast = Toast.makeText(getApplicationContext(),"扫描异常，请重试",Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(getApplicationContext(),"扫描失败，请重试",Toast.LENGTH_SHORT);
             toast.show();
 
         }

@@ -27,7 +27,7 @@ import org.json.JSONObject;
 /**
  * Created by dusz2 on 2016/8/16 0016.
  */
-public class GetNewspaperActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private EditText phoneEditText;
 
@@ -43,7 +43,7 @@ public class GetNewspaperActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_get_newspaper);
+        setContentView(R.layout.activity_login);
 
         phoneEditText = (EditText)findViewById(R.id.phone_edit_text);
         phoneEditText.setInputType(InputType.TYPE_CLASS_PHONE);
@@ -58,7 +58,7 @@ public class GetNewspaperActivity extends AppCompatActivity {
     public void verification_getting_onClick(View v){
         myPhone = phoneEditText.getText().toString();
         if(isMobile(myPhone)){
-//            Toast.makeText(GetNewspaperActivity.this,"")
+//            Toast.makeText(LoginActivity.this,"")
             Thread verificationThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -90,22 +90,22 @@ public class GetNewspaperActivity extends AppCompatActivity {
                     }
                     else {
                         Looper.prepare();
-                        Toast.makeText(GetNewspaperActivity.this,"服务器访问异常",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this,"服务器访问异常",Toast.LENGTH_SHORT).show();
                         Looper.loop();
                     }
 
                 }
             });
             //开启线程
-            if(new InternetUtil().isNetworkConnected(GetNewspaperActivity.this)){
+            if(new InternetUtil().isNetworkConnected(LoginActivity.this)){
                 verificationThread.start();
             }
             else {
-                Toast.makeText(GetNewspaperActivity.this,"网络不可用",Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this,"网络不可用",Toast.LENGTH_SHORT).show();
             }
 
         }else{
-            Toast.makeText(GetNewspaperActivity.this,"非法手机号！",Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this,"非法手机号！",Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -125,7 +125,7 @@ public class GetNewspaperActivity extends AppCompatActivity {
                     break;
 
                 case 1:
-                    AlertDialog.Builder builder = new AlertDialog.Builder(GetNewspaperActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
 
                     builder.setTitle("用户未注册");
                     builder.setMessage("如需继续操作，请为用户注册：\n"+myPhone);
@@ -147,12 +147,12 @@ public class GetNewspaperActivity extends AppCompatActivity {
                                         String putResult = internetUtil.putUserMethod(jsonObject.toString());
                                         if (putResult == "OK"){
                                             Looper.prepare();
-                                            Toast.makeText(GetNewspaperActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(LoginActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
                                             Looper.loop();
                                             isRegister = true;
                                         }else {
                                             Looper.prepare();
-                                            Toast.makeText(GetNewspaperActivity.this,"服务器访问异常，注册失败",Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(LoginActivity.this,"服务器访问异常，注册失败",Toast.LENGTH_SHORT).show();
                                             Looper.loop();
                                             isRegister = false;
                                         }
@@ -163,11 +163,11 @@ public class GetNewspaperActivity extends AppCompatActivity {
 
                                 }
                             });
-                            if(new InternetUtil().isNetworkConnected(GetNewspaperActivity.this)){
+                            if(new InternetUtil().isNetworkConnected(LoginActivity.this)){
                                 //开启线程
                                 registerThread.start();
                             }else {
-                                Toast.makeText(GetNewspaperActivity.this,"网络不可用",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this,"网络不可用",Toast.LENGTH_SHORT).show();
                             }
 
                         }

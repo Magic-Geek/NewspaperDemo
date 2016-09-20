@@ -140,7 +140,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                     Log.i("领取情况",gettingNewspaper.toString());
 
                     String url = getResources().getString(R.string.network_url) + "record/"+myPhone+"/?name="+myNewspaper.getName()+"&jou_id="+myNewspaper.getTotalIssue();
-                    Log.i("test",url);
+//                    Log.i("test",url);
 
                     InternetUtil internetUtil = new InternetUtil(url);
                     String getResult = internetUtil.getRecordMethod();
@@ -245,7 +245,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
         }
         else{
             Toast.makeText(NewspaperInfoActivity.this,"尚未登录，请登录",Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(NewspaperInfoActivity.this,GetNewspaperActivity.class);
+            Intent intent = new Intent(NewspaperInfoActivity.this,LoginActivity.class);
             startActivityForResult(intent,REQUEST_CODE);
         }
 
@@ -276,7 +276,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                         Log.i("领取情况",gettingNewspaper.toString());
 
                         String url = getResources().getString(R.string.network_url) + "record/"+myPhone+"/?name="+myNewspaper.getName()+"&jou_id="+myNewspaper.getTotalIssue();
-                        Log.i("test",url);
+//                        Log.i("test",url);
 
                         InternetUtil internetUtil = new InternetUtil(url);
                         String getResult = internetUtil.getRecordMethod();
