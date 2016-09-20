@@ -14,9 +14,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.Map;
 
 
 //{"jou_id":"154","sub_jou_id":"124","name":"6039日报","pub_date":"2014-01-01"}
@@ -35,6 +39,20 @@ public class InternetUtil {
 
     public InternetUtil(String urlDate){
         this.urlDate = urlDate;
+    }
+
+    public static String urlEncoder(String value){
+
+        String result = "";
+        try{
+              result = URLEncoder.encode(value,"UTF-8");
+//            result = java.net.URLDecoder.decode(enUtf,"unicode");
+
+        }catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public boolean isNetworkConnected(Context context){
@@ -176,6 +194,27 @@ public class InternetUtil {
                 conn.setConnectTimeout(5000);           //设置连接超时时间
                 conn.setDoInput(true);                  //打开输入流，以便从服务器获取数据
                 conn.setRequestMethod("GET");
+
+//                Log.i("test","--------");
+                String test = conn.toString();
+//                String test1 = conn.getHeaderField("mine");
+                Log.i("headerTest",test);
+//                Log.i("requestTest2",test1);
+
+                for (String header : conn.getRequestProperties().keySet()) {
+                    if (header != null) {
+                        for (String value : conn.getRequestProperties().get(header)) {
+                            Log.i("header",header+":"+ value);
+                        }
+                    }
+                }
+
+                Map<String, List<String>> map = conn.getHeaderFields();
+                for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+                    Log.i("header",entry.getKey()+":"+entry.getValue());
+//                    System.out.println("Key : " + entry.getKey() +
+//                            " ,Value : " + entry.getValue());
+                }
 
                 try{
 
