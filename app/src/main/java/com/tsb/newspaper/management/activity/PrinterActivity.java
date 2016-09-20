@@ -3,6 +3,7 @@ package com.tsb.newspaper.management.activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -207,6 +208,7 @@ public class PrinterActivity extends AppCompatActivity {
     };
 
     public void printer_qrcode_onClick(View v){
+        btMap = ((BitmapDrawable)qrcodeImage.getDrawable()).getBitmap();
         if (btMap != null) {
             printerClass.printImage(btMap);
 							/*
@@ -214,6 +216,9 @@ public class PrinterActivity extends AppCompatActivity {
 							 * msgMessage.what = 0;
 							 * hanler.sendMessage(msgMessage);
 							 */
+        }
+        else{
+            Toast.makeText(PrinterActivity.this,"btMap为空！",Toast.LENGTH_SHORT).show();
         }
     }
 

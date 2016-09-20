@@ -173,33 +173,41 @@ public class InternetUtil {
                 //打开对服务器的连接
                 conn=(HttpURLConnection) url.openConnection();
 
-                conn.setConnectTimeout(3000);           //设置连接超时时间
+                conn.setConnectTimeout(5000);           //设置连接超时时间
                 conn.setDoInput(true);                  //打开输入流，以便从服务器获取数据
                 conn.setRequestMethod("GET");
 
-                int response = conn.getResponseCode();            //获得服务器的响应码
-                Log.i("response","getrecord"+response);          //处理服务器的响应结果
+                try{
 
-                if(response == HttpURLConnection.HTTP_OK) {
+                    int response = conn.getResponseCode();            //获得服务器的响应码
+                    Log.i("response","getrecord"+response);          //处理服务器的响应结果
 
-                    /**读入服务器数据的过程**/
-                    //得到输入流
-                    InputStream is=conn.getInputStream();
-                    //创建包装流
-                    BufferedReader br=new BufferedReader(new InputStreamReader(is));
-                    //定义String类型用于储存单行数据
-                    String line=null;
-                    //创建StringBuffer对象用于存储所有数据
-                    StringBuffer sb=new StringBuffer();
-                    while((line=br.readLine())!=null){
-                        sb.append(line);
+                    if(response == HttpURLConnection.HTTP_OK) {
+
+                        /**读入服务器数据的过程**/
+                        //得到输入流
+                        InputStream is=conn.getInputStream();
+                        //创建包装流
+                        BufferedReader br=new BufferedReader(new InputStreamReader(is));
+                        //定义String类型用于储存单行数据
+                        String line=null;
+                        //创建StringBuffer对象用于存储所有数据
+                        StringBuffer sb=new StringBuffer();
+                        while((line=br.readLine())!=null){
+                            sb.append(line);
+                        }
+
+                        Log.i("get_responsed:",sb.toString());
+
+                        state = sb.toString();
+
                     }
 
-                    Log.i("get_responsed:",sb.toString());
+                }finally {
 
-                    state = sb.toString();
-
+                    conn.disconnect();
                 }
+
 
             } catch (IOException e) {
                 e.printStackTrace();

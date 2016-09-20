@@ -34,7 +34,7 @@ import java.util.Date;
 /**
  * Created by dusz2 on 2016/7/20 0020.
  */
-public class NewspaperInfoActivity extends AppCompatActivity {
+public class  NewspaperInfoActivity extends AppCompatActivity {
 
     private  Newspaper myNewspaper;
 
