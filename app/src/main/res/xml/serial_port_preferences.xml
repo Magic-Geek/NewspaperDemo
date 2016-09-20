@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:title="设置"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference android:persistent="true" android:title="Com口" android:key="DEVICE" />
+    <ListPreference android:persistent="true" android:entries="@array/baudrates_name" android:title="波特率" android:key="BAUDRATE" android:entryValues="@array/baudrates_value" />
+</PreferenceScreen>

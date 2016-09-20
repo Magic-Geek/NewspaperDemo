@@ -76,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void printer_activity_onClick(View v){
+        startActivity(new Intent(MainActivity.this,PrinterActivity.class));
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

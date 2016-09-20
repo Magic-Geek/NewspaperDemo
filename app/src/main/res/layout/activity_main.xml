@@ -7,10 +7,20 @@
     >
 
     <Button
-
         android:layout_width="175dp"
         android:layout_height="75dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center_horizontal"
+        android:onClick="printer_activity_onClick"
+        android:text="@string/printer_activity_button"
+        android:textSize="17sp"
+        style="@style/Widget.AppCompat.Button.Colored"
+        />
+
+    <Button
+        android:layout_width="175dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="60dp"
         android:layout_gravity="center_horizontal"
         android:onClick="scan_start_onClick"
         android:text="@string/scan_start_button"
@@ -19,10 +29,9 @@
         />
 
     <Button
-
         android:layout_width="175dp"
         android:layout_height="75dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="60dp"
         android:layout_gravity="center_horizontal"
         android:onClick="scan_already_onClick"
         android:text="@string/scan_already_button"
