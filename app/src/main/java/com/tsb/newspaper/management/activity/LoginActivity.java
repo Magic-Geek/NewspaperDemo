@@ -189,6 +189,34 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
+    public void scan_phonenum_onClick(View v){
+        startActivityForResult(new Intent(LoginActivity.this, CaptureActivity.class), 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+
+            String content = data.getStringExtra(CaptureActivity.EXTRA_RESULT);
+            String scanPhone = "";
+
+            Log.i("phoneNum_qrcode",content);
+            try {
+                JSONObject jsonObject = new JSONObject(content);
+                scanPhone = jsonObject.getString("phone_num");
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+
+            phoneEditText.setText(scanPhone);
+
+        } else {
+            Toast toast = Toast.makeText(getApplicationContext(),"扫描失败，请重试",Toast.LENGTH_SHORT);
+            toast.show();
+
+        }
+    }
 
     /**
      * 验证手机格式
