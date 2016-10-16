@@ -139,7 +139,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
 
                     Log.i("领取情况",gettingNewspaper.toString());
 
-                    String url = getResources().getString(R.string.network_url) + "record/"+myPhone+"/?name="+myNewspaper.getName()+"&jou_id="+myNewspaper.getTotalIssue();
+                    String url = getResources().getString(R.string.network_url) + "record/"+myPhone+"/?name="+InternetUtil.urlEncoder(myNewspaper.getName())+"&jou_id="+myNewspaper.getTotalIssue();
 //                    Log.i("test",url);
 
                     InternetUtil internetUtil = new InternetUtil(url);
@@ -275,7 +275,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
 
                         Log.i("领取情况",gettingNewspaper.toString());
 
-                        String url = getResources().getString(R.string.network_url) + "record/"+myPhone+"/?name="+myNewspaper.getName()+"&jou_id="+myNewspaper.getTotalIssue();
+                        String url = getResources().getString(R.string.network_url) + "record/"+myPhone+"/?name="+InternetUtil.urlEncoder(myNewspaper.getName())+"&jou_id="+myNewspaper.getTotalIssue();
 //                        Log.i("test",url);
 
                         InternetUtil internetUtil = new InternetUtil(url);

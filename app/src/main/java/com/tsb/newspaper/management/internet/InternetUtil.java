@@ -14,9 +14,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 
 //{"jou_id":"154","sub_jou_id":"124","name":"6039日报","pub_date":"2014-01-01"}
@@ -35,6 +37,20 @@ public class InternetUtil {
 
     public InternetUtil(String urlDate){
         this.urlDate = urlDate;
+    }
+
+    public static String urlEncoder(String value){
+
+        String result = "";
+        try{
+            result = URLEncoder.encode(value,"UTF-8");
+//            result = java.net.URLDecoder.decode(enUtf,"unicode");
+
+        }catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public boolean isNetworkConnected(Context context){

@@ -243,10 +243,10 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         public void onCallStateChanged(int state,String incomingNumber){
-//            Log.e("PhoneCallState", "Incoming number "+incomingNumber); //incomingNumber就是来电号码
 
-//            myPhone = incomingNumber;
-            phoneEditText.setText(incomingNumber);
+            if(state == TelephonyManager.CALL_STATE_RINGING){
+                phoneEditText.setText(incomingNumber);
+            }
         }
 
     }
