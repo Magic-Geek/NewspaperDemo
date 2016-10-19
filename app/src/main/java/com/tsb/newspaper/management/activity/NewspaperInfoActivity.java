@@ -227,7 +227,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                 }
 
             }else {
-                gettingResut = "该用户已领取";
+                gettingResut = "该用户无法再领取本期报纸";
                 intent.putExtra("gettingInformation",lastGetting.getLastGetting());
                 isContinue = true;
             }
@@ -359,7 +359,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                         }
 
                     }else {
-                        gettingResut = "该用户已领取";
+                        gettingResut = "该用户无法再领取本期报纸";
                         intent.putExtra("gettingInformation",lastGetting.getLastGetting());
                         isContinue = true;
                     }
