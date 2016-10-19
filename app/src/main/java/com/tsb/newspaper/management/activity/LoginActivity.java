@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void verification_getting_onClick(View v){
         myPhone = phoneEditText.getText().toString();
-        if(isMobile(myPhone)){
+//        if(isMobile(myPhone)){
 //            Toast.makeText(LoginActivity.this,"")
             Thread verificationThread = new Thread(new Runnable() {
                 @Override
@@ -104,9 +104,9 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this,"网络不可用",Toast.LENGTH_SHORT).show();
             }
 
-        }else{
-            Toast.makeText(LoginActivity.this,"非法手机号！",Toast.LENGTH_SHORT).show();
-        }
+//        }else{
+//            Toast.makeText(LoginActivity.this,"非法手机号！",Toast.LENGTH_SHORT).show();
+//        }
 
     }
 
