@@ -62,7 +62,7 @@ public class  NewspaperInfoActivity extends AppCompatActivity {
     private boolean isGet = false;
     private boolean isContinue = false;
 
-    private String gettingResut;
+    private int gettingResut; //已领取过为1，第一次领取为0
 
     final int REQUEST_CODE = 1;
     final int RESULT_CODE = 11;
@@ -190,7 +190,7 @@ public class  NewspaperInfoActivity extends AppCompatActivity {
             Log.i("isGet",String.valueOf(isGet));
 
             if(!isGet){
-                gettingResut = "领取成功";
+                gettingResut = 0;
 
                 Thread addRecordThread = new Thread(new Runnable() {
                     @Override
@@ -227,7 +227,7 @@ public class  NewspaperInfoActivity extends AppCompatActivity {
                 }
 
             }else {
-                gettingResut = "该用户已领取";
+                gettingResut = 1;
                 intent.putExtra("gettingInformation",lastGetting.getLastGetting());
                 isContinue = true;
             }
@@ -323,7 +323,7 @@ public class  NewspaperInfoActivity extends AppCompatActivity {
 
                 if(isContinue){
                     if(!isGet){
-                        gettingResut = "领取成功";
+                        gettingResut = 0;
 
                         Thread addRecordThread = new Thread(new Runnable() {
                             @Override
@@ -360,7 +360,7 @@ public class  NewspaperInfoActivity extends AppCompatActivity {
                         }
 
                     }else {
-                        gettingResut = "该用户已领取";
+                        gettingResut = 1;
                         intent.putExtra("gettingInformation",lastGetting.getLastGetting());
                         isContinue = true;
                     }
