@@ -34,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     private String myPhone;
 
     final int RESULT_CODE = 11;
+    final int VERIFY_CODE = 12;
 
     private boolean isRegister = false;
 
@@ -42,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
 
         setContentView(R.layout.activity_login);
 
@@ -57,52 +59,52 @@ public class LoginActivity extends AppCompatActivity {
 
     public void verification_getting_onClick(View v){
         myPhone = phoneEditText.getText().toString();
-//        if(isMobile(myPhone)){
+        //if(isMobile(myPhone)){
 //            Toast.makeText(LoginActivity.this,"")
-            Thread verificationThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    //线程执行内容
-                    //判断是否注册
+        Thread verificationThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //线程执行内容
+                //判断是否注册
 
-                    //handle传递
-                    Message msg = new Message();
+                //handle传递
+                Message msg = new Message();
 
-                    String url = getResources().getString(R.string.network_url)+"user/"+myPhone+"/";
-                    InternetUtil internetUtil = new InternetUtil(url);
-                    String registerResult = internetUtil.getUserMethod();
-                    if(registerResult != null && registerResult != ""){
-                        try{
-                            JSONObject jsonObject = new JSONObject(registerResult);
-                            isRegister = jsonObject.getBoolean("login_state");
+                String url = getResources().getString(R.string.network_url)+"user/"+myPhone+"/";
+                InternetUtil internetUtil = new InternetUtil(url);
+                String registerResult = internetUtil.getUserMethod();
+                if(registerResult != null && registerResult != ""){
+                    try{
+                        JSONObject jsonObject = new JSONObject(registerResult);
+                        isRegister = jsonObject.getBoolean("login_state");
 
-                        }catch (JSONException e){
-                            e.printStackTrace();
-                        }
-                        if(isRegister){
-                            msg.what = 0;
-                            Log.i("isRegister","用户已注册");
-                        }else {
-                            msg.what = 1;
-                            Log.i("isRegister","用户未注册");
-                        }
-                        handler.sendMessage(msg);
+                    }catch (JSONException e){
+                        e.printStackTrace();
                     }
-                    else {
-                        Looper.prepare();
-                        Toast.makeText(LoginActivity.this,"服务器访问异常",Toast.LENGTH_SHORT).show();
-                        Looper.loop();
+                    if(isRegister){
+                        msg.what = 0;
+                        Log.i("isRegister","用户已注册");
+                    }else {
+                        msg.what = 1;
+                        Log.i("isRegister","用户未注册");
                     }
-
+                    handler.sendMessage(msg);
                 }
-            });
-            //开启线程
-            if(new InternetUtil().isNetworkConnected(LoginActivity.this)){
-                verificationThread.start();
+                else {
+                    Looper.prepare();
+                    Toast.makeText(LoginActivity.this,"服务器访问异常",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                }
+
             }
-            else {
-                Toast.makeText(LoginActivity.this,"网络不可用",Toast.LENGTH_SHORT).show();
-            }
+        });
+        //开启线程
+        if(new InternetUtil().isNetworkConnected(LoginActivity.this)){
+            verificationThread.start();
+        }
+        else {
+            Toast.makeText(LoginActivity.this,"网络不可用",Toast.LENGTH_SHORT).show();
+        }
 
 //        }else{
 //            Toast.makeText(LoginActivity.this,"非法手机号！",Toast.LENGTH_SHORT).show();
@@ -132,43 +134,49 @@ public class LoginActivity extends AppCompatActivity {
                     builder.setPositiveButton("确定注册", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            //注册验证
+                            Intent verifyIntent = new Intent(LoginActivity.this,VerifyActivity.class);
+                            verifyIntent.putExtra("thePhone",myPhone);
+                            startActivityForResult(verifyIntent,VERIFY_CODE);
+
+
                             //注册
-                            Thread registerThread = new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //线程执行内容
-                                    //为手机用户注册
-                                    try{
-                                        JSONObject jsonObject = new JSONObject();
-                                        jsonObject.put("phone_num",myPhone);
-                                        String url = getResources().getString(R.string.network_url)+"user/";
-                                        InternetUtil internetUtil = new InternetUtil(url);
-
-                                        String putResult = internetUtil.putUserMethod(jsonObject.toString());
-                                        if (putResult == "OK"){
-                                            Looper.prepare();
-                                            Toast.makeText(LoginActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
-                                            Looper.loop();
-                                            isRegister = true;
-                                        }else {
-                                            Looper.prepare();
-                                            Toast.makeText(LoginActivity.this,"服务器访问异常，注册失败",Toast.LENGTH_SHORT).show();
-                                            Looper.loop();
-                                            isRegister = false;
-                                        }
-
-                                    }catch (JSONException e){
-                                        e.printStackTrace();
-                                    }
-
-                                }
-                            });
-                            if(new InternetUtil().isNetworkConnected(LoginActivity.this)){
-                                //开启线程
-                                registerThread.start();
-                            }else {
-                                Toast.makeText(LoginActivity.this,"网络不可用",Toast.LENGTH_SHORT).show();
-                            }
+//                            Thread registerThread = new Thread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    //线程执行内容
+//                                    //为手机用户注册
+//                                    try{
+//                                        JSONObject jsonObject = new JSONObject();
+//                                        jsonObject.put("phone_num",myPhone);
+//                                        String url = getResources().getString(R.string.network_url)+"user/";
+//                                        InternetUtil internetUtil = new InternetUtil(url);
+//
+//                                        String putResult = internetUtil.putUserMethod(jsonObject.toString());
+//                                        if (putResult == "OK"){
+//                                            Looper.prepare();
+//                                            Toast.makeText(LoginActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
+//                                            Looper.loop();
+//                                            isRegister = true;
+//                                        }else {
+//                                            Looper.prepare();
+//                                            Toast.makeText(LoginActivity.this,"服务器访问异常，注册失败",Toast.LENGTH_SHORT).show();
+//                                            Looper.loop();
+//                                            isRegister = false;
+//                                        }
+//
+//                                    }catch (JSONException e){
+//                                        e.printStackTrace();
+//                                    }
+//
+//                                }
+//                            });
+//                            if(new InternetUtil().isNetworkConnected(LoginActivity.this)){
+//                                //开启线程
+//                                registerThread.start();
+//                            }else {
+//                                Toast.makeText(LoginActivity.this,"网络不可用",Toast.LENGTH_SHORT).show();
+//                            }
 
                         }
                     });
@@ -188,7 +196,6 @@ public class LoginActivity extends AppCompatActivity {
 
         }
     };
-
 
     public void scan_phonenum_onClick(View v){
         startActivityForResult(new Intent(LoginActivity.this, CaptureActivity.class), 0);
@@ -212,9 +219,19 @@ public class LoginActivity extends AppCompatActivity {
 
             phoneEditText.setText(scanPhone);
 
-        } else {
-            Toast toast = Toast.makeText(getApplicationContext(),"扫描失败，请重试",Toast.LENGTH_SHORT);
-            toast.show();
+        } else if(requestCode == 0 && resultCode == VERIFY_CODE){
+            Bundle b = data.getExtras();
+            int isOK = b.getInt("isOK");
+            String currentPhone = b.getString("currentPhone");
+
+            if(isOK == 1){
+                Toast.makeText(LoginActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
+            }
+            else {
+//                Toast.makeText(LoginActivity.this,"注册失败",Toast.LENGTH_SHORT).show();
+            }
+
+            phoneEditText.setText(currentPhone);
 
         }
     }
@@ -244,10 +261,10 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         public void onCallStateChanged(int state,String incomingNumber){
-//            Log.e("PhoneCallState", "Incoming number "+incomingNumber); //incomingNumber就是来电号码
 
-//            myPhone = incomingNumber;
-            phoneEditText.setText(incomingNumber);
+            if(state == TelephonyManager.CALL_STATE_RINGING){
+                phoneEditText.setText(incomingNumber);
+            }
         }
 
     }
