@@ -68,6 +68,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
     final int RESULT_CODE = 11;
 
     private int gettingHistory;
+    private String userName;
 
     private GettingNewspaper gettingNewspaper;
     private GettingNewspaper lastGetting = new GettingNewspaper();
@@ -150,6 +151,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                             JSONObject jsonObject = new JSONObject(getResult);
                             gettingHistory = jsonObject.getInt("news_num");
                             isGet = jsonObject.getBoolean("receive_state");
+                            userName = jsonObject.getString("user_name");
 
                             Log.i("isGet",String.valueOf(isGet));
                             if(isGet){
@@ -238,6 +240,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                 intent.putExtra("isGet",isGet);
                 intent.putExtra("gettingResult",gettingResut);
                 intent.putExtra("gettingHistory",gettingHistory);
+                intent.putExtra("userName",userName);
 
                 startActivity(intent);
             }
@@ -286,6 +289,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                                 JSONObject jsonObject = new JSONObject(getResult);
                                 gettingHistory = jsonObject.getInt("news_num");
                                 isGet = jsonObject.getBoolean("receive_state");
+                                userName = jsonObject.getString("user_name");
 
                                 Log.i("isGet",String.valueOf(isGet));
                                 if(isGet){
@@ -372,6 +376,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                     intent.putExtra("isGet",isGet);
                     intent.putExtra("gettingResult",gettingResut);
                     intent.putExtra("gettingHistory",gettingHistory);
+                    intent.putExtra("userName",userName);
 
                     startActivity(intent);
                     this.finish();
