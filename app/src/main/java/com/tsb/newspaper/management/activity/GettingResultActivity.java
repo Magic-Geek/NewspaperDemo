@@ -29,7 +29,11 @@ public class GettingResultActivity extends AppCompatActivity {
     private TextView lastGettingLocationText;
     private LinearLayout alreadyGettingLinear;
 
+    private TextView userNameText;
+
     private boolean isGet;
+
+    private String userName;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -40,12 +44,22 @@ public class GettingResultActivity extends AppCompatActivity {
         gettingHistoryText = (TextView)findViewById(R.id.gettingHistory_textview);
         lastGettingTimeText = (TextView)findViewById(R.id.lastGettingTime_textview);
         lastGettingLocationText = (TextView)findViewById(R.id.lastGettingLocation_textview);
+        userNameText = (TextView)findViewById(R.id.user_name_text);
 
         alreadyGettingLinear = (LinearLayout)findViewById(R.id.alreadyGetting);
 
         Intent intent = this.getIntent();
 
         gettingResult = intent.getIntExtra("gettingResult",0);
+
+        userName = intent.getStringExtra("userName");
+
+        if(userName.equals("null")){
+            userNameText.setText("用户名未填写");
+        }
+        else {
+            userNameText.setText(userName);
+        }
 
         if(gettingResult == 0){
             resultText.setTextColor(getResources().getColor(R.color.normal_text));
