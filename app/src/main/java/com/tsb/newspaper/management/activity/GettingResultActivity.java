@@ -17,7 +17,7 @@ import org.json.JSONObject;
  */
 public class GettingResultActivity extends AppCompatActivity {
 
-    private String gettingResult;
+    private int gettingResult;
     private int gettingHistory;
     private String lastGettingTime;
     private String lastGettingLocation;
@@ -45,8 +45,16 @@ public class GettingResultActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
 
-        gettingResult = intent.getStringExtra("gettingResult");
-        resultText.setText(gettingResult);
+        gettingResult = intent.getIntExtra("gettingResult",0);
+        if(gettingResult == 0){
+            resultText.setText("领取成功");
+            resultText.setTextColor(getResources().getColor(R.color.normal_text));
+        }
+        else {
+            resultText.setText("警告：该用户无法再领取本期报纸");
+            resultText.setTextColor(getResources().getColor(R.color.warning_text));
+        }
+
 
         gettingHistory = intent.getIntExtra("gettingHistory",0);
 
