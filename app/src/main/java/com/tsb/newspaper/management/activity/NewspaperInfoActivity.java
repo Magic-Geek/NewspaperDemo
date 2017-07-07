@@ -62,12 +62,13 @@ public class NewspaperInfoActivity extends AppCompatActivity {
     private boolean isGet = false;
     private boolean isContinue = false;
 
-    private String gettingResut;
+    private int gettingResut; //已经领取过设为1，第一次领设为0
 
     final int REQUEST_CODE = 1;
     final int RESULT_CODE = 11;
 
     private int gettingHistory;
+    private String userName;
 
     private GettingNewspaper gettingNewspaper;
     private GettingNewspaper lastGetting = new GettingNewspaper();
@@ -150,6 +151,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                             JSONObject jsonObject = new JSONObject(getResult);
                             gettingHistory = jsonObject.getInt("news_num");
                             isGet = jsonObject.getBoolean("receive_state");
+                            userName = jsonObject.getString("user_name");
 
                             Log.i("isGet",String.valueOf(isGet));
                             if(isGet){
@@ -190,7 +192,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
             Log.i("isGet",String.valueOf(isGet));
 
             if(!isGet){
-                gettingResut = "领取成功";
+                gettingResut = 0;
 
                 Thread addRecordThread = new Thread(new Runnable() {
                     @Override
@@ -227,7 +229,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                 }
 
             }else {
-                gettingResut = "该用户已领取";
+                gettingResut = 1;
                 intent.putExtra("gettingInformation",lastGetting.getLastGetting());
                 isContinue = true;
             }
@@ -238,6 +240,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                 intent.putExtra("isGet",isGet);
                 intent.putExtra("gettingResult",gettingResut);
                 intent.putExtra("gettingHistory",gettingHistory);
+                intent.putExtra("userName",userName);
 
                 startActivity(intent);
             }
@@ -286,6 +289,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                                 JSONObject jsonObject = new JSONObject(getResult);
                                 gettingHistory = jsonObject.getInt("news_num");
                                 isGet = jsonObject.getBoolean("receive_state");
+                                userName = jsonObject.getString("user_name");
 
                                 Log.i("isGet",String.valueOf(isGet));
                                 if(isGet){
@@ -322,7 +326,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
 
                 if(isContinue){
                     if(!isGet){
-                        gettingResut = "领取成功";
+                        gettingResut = 0;
 
                         Thread addRecordThread = new Thread(new Runnable() {
                             @Override
@@ -359,7 +363,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                         }
 
                     }else {
-                        gettingResut = "该用户已领取";
+                        gettingResut = 1;
                         intent.putExtra("gettingInformation",lastGetting.getLastGetting());
                         isContinue = true;
                     }
@@ -372,6 +376,7 @@ public class NewspaperInfoActivity extends AppCompatActivity {
                     intent.putExtra("isGet",isGet);
                     intent.putExtra("gettingResult",gettingResut);
                     intent.putExtra("gettingHistory",gettingHistory);
+                    intent.putExtra("userName",userName);
 
                     startActivity(intent);
                     this.finish();
